@@ -1,0 +1,12 @@
+License: TBD.
+
+No license has been selected yet for this project. Until a license is chosen
+and this file is replaced with its full text, all rights to this code are
+reserved by the copyright holder(s); it is not licensed for reuse,
+redistribution, or modification by third parties.
+
+When ready to choose, common options for a closed-source consumer app with
+an eventual App Store / Play Store release include keeping the repository
+private with no OSS license at all (most common for this kind of product),
+or, if any portion is later open-sourced, a permissive license such as MIT
+or Apache-2.0 for that portion specifically.

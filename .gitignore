@@ -1,0 +1,77 @@
+# ---- Flutter / Dart ----
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/.pub-cache/
+app/.pub/
+app/build/
+app/**/doc/api/
+app/*.iml
+app/pubspec.lock
+
+# ---- Android ----
+app/android/.gradle/
+app/android/captures/
+app/android/gradlew
+app/android/gradlew.bat
+app/android/local.properties
+app/android/**/GeneratedPluginRegistrant.java
+app/android/key.properties
+app/**/*.jks
+app/**/*.keystore
+
+# ---- iOS / Xcode ----
+app/ios/**/*.mode1v3
+app/ios/**/*.mode2v3
+app/ios/**/*.moved-aside
+app/ios/**/*.pbxuser
+app/ios/**/*.perspectivev3
+app/ios/**/*sync/
+app/ios/**/.sconsign.dblite
+app/ios/**/.tags*
+app/ios/**/.vagrant/
+app/ios/**/DerivedData/
+app/ios/**/Icon?
+app/ios/**/Pods/
+app/ios/**/.symlinks/
+app/ios/**/profile
+app/ios/**/xcuserdata
+app/ios/.generated/
+app/ios/Flutter/App.framework
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+app/ios/Flutter/Generated.xcconfig
+app/ios/Flutter/ephemeral
+app/ios/Flutter/app.flx
+app/ios/Flutter/app.zip
+app/ios/Flutter/flutter_assets/
+app/ios/Flutter/flutter_export_environment.sh
+app/ios/ServiceDefinitions.json
+app/ios/Runner/GeneratedPluginRegistrant.*
+
+# ---- Secrets — never commit these ----
+.env
+.env.*
+!.env.example
+**/*api_key*
+**/*apikey*
+**/secrets.dart
+**/*.pem
+**/*.p12
+**/*.jks
+**/*.mobileprovision
+**/*.keystore
+app/android/key.properties
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Coverage ----
+coverage/
