@@ -4,7 +4,7 @@
 
 KeepMind is a personal prospective-memory application: capture a document, screenshot, or thought in a few seconds, and let KeepMind extract the dates, amounts, and actions that matter, then remind you deterministically when it's time to act. Names and taglines in this repo are provisional.
 
-This repository is at **Phase A** (architecture + repository skeleton) of the development plan in [`docs/TECHNICAL_FOUNDATION_PLAN.md`](docs/TECHNICAL_FOUNDATION_PLAN.md). Nothing here is production-ready; the app currently boots to a single static Home screen.
+This repository is at **Phase B** (local memory CRUD) of the development plan in [`docs/TECHNICAL_FOUNDATION_PLAN.md`](docs/TECHNICAL_FOUNDATION_PLAN.md). Nothing here is production-ready; the app currently supports typing in a memory, viewing/editing/deleting it, and persisting it in the encrypted local database — no camera, OCR, AI extraction, or reminders yet.
 
 ## Repository layout
 
@@ -26,7 +26,12 @@ If `flutter create .` prompts about overwriting existing files, it will not touc
 
 ## Status
 
-Phase A only: architecture decisions, repository skeleton, and the smallest runnable UI (`KeepMind` / `Nothing you need to remember right now.` / `+ Remember something`). See `docs/DECISIONS.md` for the running architecture decision log and the phase plan for what comes next.
+- **Phase A** — architecture decisions, repository skeleton, smallest runnable UI.
+- **Phase B** — local memory CRUD: manual "type it in" capture (`presentation/capture`), a memory list on Home, view/edit/delete (`presentation/memory_detail`), all persisted through the real Drift-backed repository (`data/repositories/memory_repository_drift_impl.dart`). Camera/photo/document capture, OCR, and AI extraction are still ahead (Phases C–F); reminders are Phase G.
+
+See `docs/DECISIONS.md` for the running architecture decision log (ADR-0001 through ADR-0004) and the phase plan for what comes next.
+
+**Still unverified locally:** this repo has never been compiled — see the environment note in `docs/DECISIONS.md` (ADR-0001). Run `flutter pub get && dart run build_runner build --delete-conflicting-outputs && flutter test` after generating the platform folders below; that build_runner step is required for Phase B specifically, since `data/local/database/app_database.dart` has a `part 'app_database.g.dart'` that doesn't exist yet in this delivery.
 
 ## License
 

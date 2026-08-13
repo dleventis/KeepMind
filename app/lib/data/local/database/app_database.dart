@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -14,6 +16,15 @@ part 'app_database.g.dart';
 /// schema — see docs/DATABASE.md for why heterogeneous, category-specific
 /// fields live in [structuredData] (JSON) rather than as dozens of
 /// mostly-null columns.
+///
+/// `@DataClassName('MemoryObjectRow')`: without this, Drift's default
+/// singularization of `MemoryObjects` generates a row class literally
+/// named `MemoryObject`, which collides with the domain entity of the
+/// same name in `domain/entities/memory_object.dart`. Renaming the
+/// generated row type avoids that collision at the one place
+/// (`data/repositories/memory_repository_drift_impl.dart`) that imports
+/// both.
+@DataClassName('MemoryObjectRow')
 class MemoryObjects extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
@@ -41,6 +52,7 @@ class MemoryObjects extends Table {
 /// Phase G will add this table when the reminder scheduler is built —
 /// declared here now so the schema-versioning story starts from a
 /// realistic shape. See docs/REMINDERS.md.
+@DataClassName('ReminderRow')
 class Reminders extends Table {
   TextColumn get id => text()();
   TextColumn get memoryId => text().references(MemoryObjects, #id)();
@@ -116,12 +128,13 @@ bool _debugHasCipher(Database database) {
   return database.select('PRAGMA cipher;').isNotEmpty;
 }
 
+/// Generates a 256-bit key with a cryptographically secure RNG,
+/// base64url-encoded so it's a safe `PRAGMA key = '...'` string literal
+/// (the base64url alphabet never contains a single quote). Called exactly
+/// once per install, on first database open — see [_openConnection].
+/// Never logged.
 String _generateEncryptionKey() {
-  // TODO(phase-b): replace with a cryptographically secure RNG
-  // (e.g. `Random.secure()` combined with a vetted hex/base64 encoding)
-  // before this leaves the skeleton stage — left as an explicit TODO
-  // rather than silently shipping a weak key.
-  throw UnimplementedError(
-    'Encryption key generation is a Phase B task — see docs/SECURITY.md.',
-  );
+  final random = Random.secure();
+  final bytes = List<int>.generate(32, (_) => random.nextInt(256));
+  return base64Url.encode(bytes);
 }

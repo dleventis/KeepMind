@@ -58,4 +58,46 @@ class MemoryObject {
   final Map<String, Object?> structuredData;
 
   final bool archived;
+
+  /// Returns a copy with the given fields replaced. For the nullable
+  /// fields ([description], [eventDate], [confidenceScore]), pass the
+  /// sentinel-aware setters below when you need to explicitly clear a
+  /// value rather than leave it unchanged — plain `copyWith(eventDate:
+  /// null)` is indistinguishable from "don't change this," which is the
+  /// classic Dart copyWith footgun, so clearing goes through
+  /// [clearEventDate]/[clearDescription]/[clearConfidenceScore] instead.
+  MemoryObject copyWith({
+    String? title,
+    String? description,
+    String? category,
+    String? sourceType,
+    DateTime? updatedAt,
+    DateTime? eventDate,
+    double? confidenceScore,
+    ConfirmationStatus? confirmationStatus,
+    Sensitivity? sensitivity,
+    Map<String, Object?>? structuredData,
+    bool? archived,
+    bool clearDescription = false,
+    bool clearEventDate = false,
+    bool clearConfidenceScore = false,
+  }) {
+    return MemoryObject(
+      id: id,
+      title: title ?? this.title,
+      description: clearDescription ? null : (description ?? this.description),
+      category: category ?? this.category,
+      sourceType: sourceType ?? this.sourceType,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      eventDate: clearEventDate ? null : (eventDate ?? this.eventDate),
+      confidenceScore: clearConfidenceScore
+          ? null
+          : (confidenceScore ?? this.confidenceScore),
+      confirmationStatus: confirmationStatus ?? this.confirmationStatus,
+      sensitivity: sensitivity ?? this.sensitivity,
+      structuredData: structuredData ?? this.structuredData,
+      archived: archived ?? this.archived,
+    );
+  }
 }
