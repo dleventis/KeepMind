@@ -8,7 +8,6 @@ app/.pub/
 app/build/
 app/**/doc/api/
 app/*.iml
-app/pubspec.lock
 
 # ---- Android ----
 app/android/.gradle/
@@ -75,3 +74,6 @@ Thumbs.db
 
 # ---- Coverage ----
 coverage/
+
+# ---- Leftover artifacts from the device bridge (cannot be deleted remotely) ----
+.git_stale_locks_to_delete/
