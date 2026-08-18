@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Keepmind</string>
+	<string>KeepMind</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,6 +26,16 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!--
+		Permission strings. App Store review rejects apps whose usage
+		descriptions are missing or vague, so these say specifically what
+		the app does with the access and why the user benefits — not
+		"needs camera access". See docs/DECISIONS.md ADR-0005.
+	-->
+	<key>NSCameraUsageDescription</key>
+	<string>KeepMind uses the camera so you can photograph a document and have its dates read automatically. Photos stay on your device.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>KeepMind needs access to your photos so you can turn an existing screenshot or picture into a reminder. Photos stay on your device.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -1,226 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../../core/utils/id_generator.dart';
-import '../../domain/entities/memory_object.dart';
-import '../providers/app_providers.dart';
+import '../../core/errors/app_errors.dart';
+import 'capture_draft.dart';
+import 'confirm_screen.dart';
+import 'processing_screen.dart';
 
-/// Phase B capture: manual typed entry only — the "Typed text" input mode
-/// from brief section 5's MVP list, which needs no OCR or AI extraction
-/// and so is the one capture path that can ship before Phase D/E/F. Camera,
-/// photo, and document capture are visibly present but disabled, with a
-/// one-line explanation, rather than silently missing — see the
-/// processing-UX principle in brief section 28 about not hiding what
-/// isn't ready yet.
+/// Pick how to capture. The brief wants this to take 5–10 seconds end to
+/// end (§4), so this screen is three large targets and nothing else — no
+/// tabs, no nested menus, no configuration before the user has given the
+/// app anything.
 ///
-/// No AI "understand" stage runs here: the user is the source of truth for
-/// everything they type, so it goes straight to CONFIRM-equivalent (this
-/// form) → STORE, skipping the AI-assisted UNDERSTAND stage entirely.
-class CaptureScreen extends ConsumerStatefulWidget {
+/// Camera capture goes through image_picker rather than the `camera`
+/// package: image_picker hands off to the OS camera UI, which means no
+/// preview/controller lifecycle to manage, no orientation handling, and a
+/// far smaller permissions and App Store review surface. A custom
+/// in-app camera with edge detection would be nicer eventually, but it is
+/// not what makes this product work. See ADR-0005 in docs/DECISIONS.md.
+class CaptureScreen extends StatelessWidget {
   const CaptureScreen({super.key});
-
-  @override
-  ConsumerState<CaptureScreen> createState() => _CaptureScreenState();
-}
-
-class _CaptureScreenState extends ConsumerState<CaptureScreen> {
-  static const _categories = [
-    'Document',
-    'Subscription',
-    'Appointment',
-    'Physical memory',
-    'Other',
-  ];
-
-  final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  String _category = _categories.first;
-  DateTime? _eventDate;
-  bool _saving = false;
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Remember something')),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _DisabledCaptureOptionsBanner(),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'What is it?',
-                    hintText: 'e.g. Car insurance, Spare key location',
-                  ),
-                  textInputAction: TextInputAction.next,
-                  validator: (value) => (value == null || value.trim().isEmpty)
-                      ? 'Give it a short title.'
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Details (optional)',
-                    hintText: 'Anything else worth remembering',
-                  ),
-                  minLines: 2,
-                  maxLines: 5,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _category,
-                  decoration: const InputDecoration(labelText: 'Category'),
-                  items: _categories
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) setState(() => _category = value);
-                  },
-                ),
-                const SizedBox(height: 16),
-                _EventDatePicker(
-                  value: _eventDate,
-                  onChanged: (date) => setState(() => _eventDate = date),
-                ),
-                const SizedBox(height: 32),
-                FilledButton(
-                  onPressed: _saving ? null : _save,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: _saving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Save memory'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _save() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    setState(() => _saving = true);
-
-    final now = DateTime.now();
-    final memory = MemoryObject(
-      id: IdGenerator.generate(),
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim().isEmpty
-          ? null
-          : _descriptionController.text.trim(),
-      category: _category,
-      sourceType: 'text',
-      createdAt: now,
-      updatedAt: now,
-      eventDate: _eventDate,
-      // Typed directly by the user — nothing here was AI-extracted, so it
-      // is trusted immediately rather than sitting in `pending` awaiting a
-      // confirmation step that doesn't apply to manual entry.
-      confirmationStatus: ConfirmationStatus.confirmed,
-    );
-
-    try {
-      await ref.read(memoryRepositoryProvider).save(memory);
-      if (mounted) Navigator.of(context).pop();
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
-  }
-}
-
-class _DisabledCaptureOptionsBanner extends StatelessWidget {
-  const _DisabledCaptureOptionsBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            Row(
-              children: [
-                Icon(Icons.camera_alt_outlined,
-                    color: Theme.of(context).disabledColor),
-                const SizedBox(width: 12),
-                Icon(Icons.photo_outlined,
-                    color: Theme.of(context).disabledColor),
-                const SizedBox(width: 12),
-                Icon(Icons.description_outlined,
-                    color: Theme.of(context).disabledColor),
-                const Spacer(),
-                const Text('Coming soon'),
-              ],
+            _CaptureOption(
+              icon: Icons.camera_alt_outlined,
+              title: 'Take a photo',
+              subtitle: 'Photograph a document, letter, or label',
+              onTap: () => _pickImage(context, ImageSource.camera),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Camera, photo, and document capture with automatic reading '
-              'arrive in a later phase. For now, type it in below.',
-              style: Theme.of(context).textTheme.bodySmall,
+            const SizedBox(height: 12),
+            _CaptureOption(
+              icon: Icons.photo_library_outlined,
+              title: 'Choose a photo or screenshot',
+              subtitle: 'Pick something already on your phone',
+              onTap: () => _pickImage(context, ImageSource.gallery),
+            ),
+            const SizedBox(height: 12),
+            _CaptureOption(
+              icon: Icons.edit_outlined,
+              title: 'Type it in',
+              subtitle: 'Write it down yourself',
+              onTap: () => _openConfirm(context, const CaptureDraft()),
             ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        // Full-resolution photos are large and slow to OCR without being
+        // meaningfully more accurate for printed text. This is a starting
+        // point, worth revisiting against real accuracy data.
+        imageQuality: 85,
+        maxWidth: 2000,
+      );
+      // Null means the user backed out of the camera/picker — not an
+      // error, just nothing to do.
+      if (picked == null || !context.mounted) return;
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ProcessingScreen(imagePath: picked.path),
+        ),
+      );
+    } on PlatformException catch (e) {
+      if (!context.mounted) return;
+      // image_picker surfaces a denied camera/photos permission as a
+      // PlatformException rather than a typed error.
+      final error = e.code == 'camera_access_denied' ||
+              e.code == 'photo_access_denied'
+          ? const PermissionError(permission: 'camera or photo library')
+          : const StorageError(debugMessage: 'image_picker failed');
+      _showError(context, error);
+    }
+  }
+
+  Future<void> _openConfirm(BuildContext context, CaptureDraft draft) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ConfirmScreen(draft: draft)),
+    );
+  }
+
+  void _showError(BuildContext context, AppError error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(error.userMessage)),
+    );
+  }
 }
 
-class _EventDatePicker extends StatelessWidget {
-  const _EventDatePicker({required this.value, required this.onChanged});
+class _CaptureOption extends StatelessWidget {
+  const _CaptureOption({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
-  final DateTime? value;
-  final ValueChanged<DateTime?> onChanged;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: value ?? DateTime.now(),
-          firstDate: DateTime(DateTime.now().year - 1),
-          lastDate: DateTime(DateTime.now().year + 20),
-        );
-        if (picked != null) onChanged(picked);
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Important date (optional)',
-          suffixIcon: value == null
-              ? const Icon(Icons.calendar_today_outlined)
-              : IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () => onChanged(null),
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Row(
+            children: [
+              Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ),
-        ),
-        child: Text(
-          value == null
-              ? 'No date set — this becomes a reminder once set'
-              : '${value!.year}-${value!.month.toString().padLeft(2, '0')}-${value!.day.toString().padLeft(2, '0')}',
+              ),
+            ],
+          ),
         ),
       ),
     );

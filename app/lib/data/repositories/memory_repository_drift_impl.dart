@@ -81,6 +81,8 @@ class DriftMemoryRepository implements MemoryRepository {
       structuredData:
           (jsonDecode(row.structuredData) as Map).cast<String, Object?>(),
       archived: row.archived,
+      sourceUri: row.sourceUri,
+      rawText: row.rawText,
     );
   }
 
@@ -99,6 +101,8 @@ class DriftMemoryRepository implements MemoryRepository {
       sensitivity: Value(memory.sensitivity.index),
       structuredData: Value(jsonEncode(memory.structuredData)),
       archived: Value(memory.archived),
+      sourceUri: Value(memory.sourceUri),
+      rawText: Value(memory.rawText),
     );
   }
 }

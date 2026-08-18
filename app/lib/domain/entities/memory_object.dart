@@ -31,13 +31,18 @@ class MemoryObject {
     this.sensitivity = Sensitivity.normal,
     this.structuredData = const {},
     this.archived = false,
+    this.sourceUri,
+    this.rawText,
   });
 
   final String id;
   final String title;
   final String? description;
   final String category;
-  final String sourceType; // e.g. 'photo', 'pdf', 'text'
+
+  /// 'photo', 'pdf', or 'text'.
+  final String sourceType;
+
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -59,6 +64,21 @@ class MemoryObject {
 
   final bool archived;
 
+  /// Absolute path to the captured image on this device, if any. Local
+  /// filesystem path rather than a URL — nothing is uploaded anywhere
+  /// (see docs/PRIVACY.md). Managed by `data/files/attachment_store.dart`.
+  final String? sourceUri;
+
+  /// Raw OCR output, kept verbatim and untouched.
+  ///
+  /// Two reasons this is stored rather than discarded after extraction:
+  /// re-running a better extraction later (Phase E/F AI, or an improved
+  /// parser) without asking the user to re-photograph the document, and
+  /// full-text search (Phase H). It is *untrusted input* — see
+  /// docs/SECURITY.md on prompt injection; anything read out of a document
+  /// is data, never an instruction.
+  final String? rawText;
+
   /// Returns a copy with the given fields replaced. For the nullable
   /// fields ([description], [eventDate], [confidenceScore]), pass the
   /// sentinel-aware setters below when you need to explicitly clear a
@@ -78,6 +98,8 @@ class MemoryObject {
     Sensitivity? sensitivity,
     Map<String, Object?>? structuredData,
     bool? archived,
+    String? sourceUri,
+    String? rawText,
     bool clearDescription = false,
     bool clearEventDate = false,
     bool clearConfidenceScore = false,
@@ -98,6 +120,8 @@ class MemoryObject {
       sensitivity: sensitivity ?? this.sensitivity,
       structuredData: structuredData ?? this.structuredData,
       archived: archived ?? this.archived,
+      sourceUri: sourceUri ?? this.sourceUri,
+      rawText: rawText ?? this.rawText,
     );
   }
 }

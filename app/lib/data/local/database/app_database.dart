@@ -45,6 +45,13 @@ class MemoryObjects extends Table {
   TextColumn get structuredData => text().withDefault(const Constant('{}'))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
 
+  /// Local filesystem path to the captured image, if any (Phase C).
+  TextColumn get sourceUri => text().nullable()();
+
+  /// Verbatim OCR output (Phase D). Untrusted input — see
+  /// docs/SECURITY.md.
+  TextColumn get rawText => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -79,6 +86,11 @@ class AppDatabase extends _$AppDatabase {
     return AppDatabase(_openConnection(keyStore));
   }
 
+  /// Still 1 despite the Phase C/D addition of `sourceUri` and `rawText`:
+  /// the app has never been released, so no device anywhere holds a v1
+  /// database that would need migrating. The first *public* release
+  /// freezes this — every schema change after that ships as an explicit
+  /// onUpgrade step below plus a migration test (docs/DATABASE.md).
   @override
   int get schemaVersion => 1;
 
@@ -87,8 +99,8 @@ class AppDatabase extends _$AppDatabase {
         onCreate: (m) async {
           await m.createAll();
         },
-        // Every future schema change ships as an explicit onUpgrade step
-        // here, with a corresponding migration test — see
+        // Every post-release schema change ships as an explicit onUpgrade
+        // step here, with a corresponding migration test — see
         // docs/DATABASE.md and brief section 35.
       );
 }
