@@ -3,10 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/files/attachment_store.dart';
 import '../../data/local/database/app_database.dart';
 import '../../data/local/secure/secure_key_store.dart';
+import '../../data/notifications/local_notification_service.dart';
 import '../../data/ocr/mlkit_ocr_service.dart';
 import '../../data/repositories/memory_repository_drift_impl.dart';
+import '../../data/repositories/reminder_repository_drift_impl.dart';
+import '../../data/services/reminder_scheduler.dart';
 import '../../domain/entities/memory_object.dart';
 import '../../domain/repositories/memory_repository.dart';
+import '../../domain/repositories/reminder_repository.dart';
+import '../../domain/services/notification_service.dart';
 import '../../domain/services/ocr_service.dart';
 
 /// Central provider wiring. This is the one file allowed to import both a
@@ -46,4 +51,21 @@ final ocrServiceProvider = Provider<OcrService>((ref) {
 
 final attachmentStoreProvider = Provider<AttachmentStore>((ref) {
   return const AttachmentStore();
+});
+
+// --- Reminders (Phase G) -------------------------------------------------
+
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  return LocalNotificationService();
+});
+
+final reminderRepositoryProvider = Provider<ReminderRepository>((ref) {
+  return DriftReminderRepository(ref.watch(appDatabaseProvider));
+});
+
+final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
+  return ReminderScheduler(
+    reminders: ref.watch(reminderRepositoryProvider),
+    notifications: ref.watch(notificationServiceProvider),
+  );
 });

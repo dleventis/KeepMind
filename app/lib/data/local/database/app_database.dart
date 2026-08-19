@@ -62,12 +62,27 @@ class MemoryObjects extends Table {
 @DataClassName('ReminderRow')
 class Reminders extends Table {
   TextColumn get id => text()();
-  TextColumn get memoryId => text().references(MemoryObjects, #id)();
+
+  /// `onDelete: KeyAction.cascade` so deleting a memory cannot leave
+  /// reminders pointing at a row that no longer exists. Enforced only
+  /// because `PRAGMA foreign_keys = ON` is set in beforeOpen.
+  TextColumn get memoryId =>
+      text().references(MemoryObjects, #id, onDelete: KeyAction.cascade)();
+
   DateTimeColumn get triggerTime => dateTime()();
   TextColumn get timezone => text()();
   IntColumn get status => integer()();
   DateTimeColumn get createdAt => dateTime()();
-  DateTimeColumn get deliveredAt => dateTime().nullable()();
+  IntColumn get daysBefore => integer()();
+
+  /// Stable platform notification id, so a reminder can still be
+  /// cancelled after an app restart.
+  IntColumn get notificationId => integer()();
+
+  /// Set only when the user taps the notification — the sole delivery
+  /// signal the platform provides. There is deliberately no
+  /// `deliveredAt`: nothing could set it truthfully. See
+  /// domain/entities/reminder.dart.
   DateTimeColumn get acknowledgedAt => dateTime().nullable()();
 
   @override
