@@ -18,6 +18,14 @@ import 'capture_draft.dart';
 /// Handles both the OCR path (draft has an image and raw text) and the
 /// typed path (empty draft). One screen rather than two because the
 /// fields are identical; only the pre-filled suggestions differ.
+///
+/// The title is deliberately NOT auto-filled from OCR text: the first
+/// line of a document is as often a letterhead or logo caption as a
+/// useful title, and a wrong pre-filled title is worse than an empty one
+/// because people accept defaults without reading them. Title suggestion
+/// belongs to the AI extraction stage (Phase F), where it arrives with a
+/// confidence score. Dates are different — they are offered as tappable
+/// suggestions but never pre-selected, so nothing is ever assumed.
 class ConfirmScreen extends ConsumerStatefulWidget {
   const ConfirmScreen({required this.draft, super.key});
 
@@ -43,20 +51,6 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
   DateTime? _eventDate;
   bool _saving = false;
   bool _showRawText = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Deliberately NOT auto-filling the title from OCR text: the first
-    // line of a document is as often a letterhead or a logo caption as it
-    // is a useful title, and a wrong pre-filled title is worse than an
-    // empty one because people accept defaults without reading them.
-    // Title suggestion is a job for the AI extraction stage (Phase F),
-    // where it comes with a confidence score.
-    //
-    // Dates are different: they're offered as tappable suggestions below,
-    // but never pre-selected. The user picks one, so nothing is assumed.
-  }
 
   @override
   void dispose() {

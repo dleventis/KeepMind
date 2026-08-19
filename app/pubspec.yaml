@@ -4,7 +4,11 @@ publish_to: "none"
 version: 0.1.0+1
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
+  # flutter_riverpod 3.4.2 itself requires Dart ^3.12.0, and
+  # DropdownButtonFormField.initialValue needs Flutter 3.35+. A lower
+  # bound below these makes `flutter pub get` fail version solving.
+  sdk: ^3.12.0
+  flutter: ">=3.35.0"
 
 dependencies:
   flutter:
@@ -53,17 +57,16 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-# Encrypted SQLite (SQLite3MultipleCiphers instead of the deprecated
-# sqlcipher_flutter_libs — see docs/DECISIONS.md, ADR-0002). This uses
-# Dart's native-assets build hooks, which is a newer, still-evolving pub
-# tooling feature — verify the exact current syntax against
-# https://drift.simonbinder.eu/platforms/encryption/ locally before Phase B,
-# since it could not be confirmed by running `flutter pub get` in this
-# sandbox (no pub.dev access here — see README.md).
-# hooks:
-#   user_defines:
-#     sqlite3:
-#       source: sqlite3mc
+# Encrypted SQLite: bundles SQLite3MultipleCiphers instead of plain
+# SQLite, which is what makes `PRAGMA key` in app_database.dart actually
+# encrypt anything. Without this block the app still runs, but silently
+# writes an UNENCRYPTED database (plain SQLite ignores PRAGMA key) and
+# then trips the `_debugHasCipher` assert on first open. Verified against
+# https://drift.simonbinder.eu/platforms/encryption/ — see ADR-0002.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
 
 # NOTE: version constraints here were checked against individual pub.dev
 # package pages, but this sandbox has never run an actual `flutter pub

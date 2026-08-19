@@ -128,11 +128,15 @@ void main() {
       expect(find.byType(ChoiceChip), findsNWidgets(2));
       expect(find.text('No date set'), findsOneWidget);
 
-      await tester.tap(find.byType(ChoiceChip).first);
+      // Candidates are sorted oldest-first, so 4 March 2026 (the
+      // month/day reading) comes before 3 April 2026 (the day/month one).
+      // Chip labels carry the interpretation, e.g.
+      // '04/03/2026  (month/day/year)'.
+      await tester.tap(find.byType(ChoiceChip).last);
       await tester.pumpAndSettle();
 
-      // Tapping a suggestion fills the date field; 3 April sorts first.
-      expect(find.text('03/04/2026'), findsWidgets);
+      // The date field (not the chip) now reads the chosen date exactly.
+      expect(find.text('03/04/2026'), findsOneWidget);
       expect(find.text('No date set'), findsNothing);
     });
 

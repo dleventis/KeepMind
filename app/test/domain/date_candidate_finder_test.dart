@@ -125,4 +125,26 @@ void main() {
       expect(found.single.date, DateTime(2026, 11, 17));
     });
   });
+
+  group('does not mistake other numbers for dates', () {
+    // Real documents are full of digit groups. A false positive here is
+    // worse than a miss: it puts a wrong date in front of the user as a
+    // plausible-looking suggestion.
+    const notDates = {
+      'policy number': 'Policy AB123456',
+      'money': 'Annual premium EUR486.00',
+      'certificate reference': 'Certificate No. NM-88421-C',
+      'pagination': 'Page 1 of 1',
+      'phone number': 'Call us on 555-1234',
+      'version string': 'Document template v1.2.3',
+      'fraction-like quantity': 'Item 12/24 in stock',
+      'bank details': 'IBAN GB29 1234 5678',
+    };
+
+    for (final entry in notDates.entries) {
+      test('ignores a ${entry.key}', () {
+        expect(DateCandidateFinder.find(entry.value), isEmpty);
+      });
+    }
+  });
 }

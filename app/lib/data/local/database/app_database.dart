@@ -99,6 +99,13 @@ class AppDatabase extends _$AppDatabase {
         onCreate: (m) async {
           await m.createAll();
         },
+        beforeOpen: (details) async {
+          // SQLite ignores foreign-key constraints unless this is set,
+          // per connection — without it `Reminders.memoryId`'s reference
+          // to MemoryObjects is documentation, not an enforced constraint,
+          // and orphaned reminders could point at deleted memories.
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
         // Every post-release schema change ships as an explicit onUpgrade
         // step here, with a corresponding migration test — see
         // docs/DATABASE.md and brief section 35.

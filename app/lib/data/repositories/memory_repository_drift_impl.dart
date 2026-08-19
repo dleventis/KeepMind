@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import '../../core/errors/app_errors.dart';
 import '../../domain/entities/memory_object.dart';
 import '../../domain/repositories/memory_repository.dart';
+import '../files/attachment_store.dart';
 import '../local/database/app_database.dart';
 
 /// The real, persisted implementation of [MemoryRepository], backed by the
@@ -13,9 +14,17 @@ import '../local/database/app_database.dart';
 /// mapping between the Drift row shape and the domain entity happens here
 /// and nowhere else, so `domain/` stays free of persistence concerns.
 class DriftMemoryRepository implements MemoryRepository {
-  DriftMemoryRepository(this._db);
+  DriftMemoryRepository(this._db, {AttachmentStore? attachments})
+      : _attachments = attachments ?? const AttachmentStore();
 
   final AppDatabase _db;
+
+  /// Owned by the repository rather than called from the UI so that
+  /// deleting a memory *always* takes its images with it, from wherever
+  /// the delete was triggered. Leaving a copy of someone's passport photo
+  /// on disk after they deleted the record would be a privacy failure,
+  /// not just untidiness.
+  final AttachmentStore _attachments;
 
   @override
   Stream<List<MemoryObject>> watchAll() {
@@ -62,6 +71,15 @@ class DriftMemoryRepository implements MemoryRepository {
       await (_db.delete(_db.memoryObjects)..where((t) => t.id.equals(id))).go();
     } catch (e) {
       throw StorageError(debugMessage: 'Failed to delete memory $id: $e');
+    }
+    // Deliberately after the row delete and deliberately not fatal: if
+    // the record is gone but a file lingers, the user still sees the
+    // memory as deleted. Failing the whole operation here would be worse
+    // — it would leave a row the user believes they removed.
+    try {
+      await _attachments.deleteFor(id);
+    } on StorageError {
+      // TODO(phase-i): sweep orphaned attachment directories on startup.
     }
   }
 

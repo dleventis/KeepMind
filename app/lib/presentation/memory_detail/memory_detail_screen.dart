@@ -1,38 +1,33 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/errors/app_errors.dart';
 import '../../domain/entities/memory_object.dart';
 import '../providers/app_providers.dart';
 
-/// View, edit, and delete a single confirmed memory. Editing is inline on
-/// this screen rather than a separate route — Phase B scope doesn't
-/// justify two screens for what's currently a handful of plain-text
-/// fields; revisit once structured, category-specific fields (Phase F)
-/// make a dedicated edit flow worth it.
+/// View, edit, and delete a single memory. Editing is inline rather than
+/// a separate route — Phase B/C scope doesn't justify two screens for a
+/// handful of plain fields; revisit once structured, category-specific
+/// fields (Phase F) make a dedicated edit flow worth it.
 class MemoryDetailScreen extends ConsumerStatefulWidget {
   const MemoryDetailScreen({required this.memoryId, super.key});
 
   final String memoryId;
 
   @override
-  ConsumerState<MemoryDetailScreen> createState() =>
-      _MemoryDetailScreenState();
+  ConsumerState<MemoryDetailScreen> createState() => _MemoryDetailScreenState();
 }
 
 class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
-  late final TextEditingController _titleController;
-  late final TextEditingController _descriptionController;
-  MemoryObject? _loaded;
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  bool _hydrated = false;
   DateTime? _eventDate;
   bool _dirty = false;
   bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController = TextEditingController();
-    _descriptionController = TextEditingController();
-  }
 
   @override
   void dispose() {
@@ -41,9 +36,12 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
     super.dispose();
   }
 
+  /// Seeds the controllers once. Re-hydrating on every rebuild would
+  /// stomp on whatever the user is currently typing each time the
+  /// underlying stream emits.
   void _hydrate(MemoryObject memory) {
-    if (_loaded != null) return; // only hydrate controllers once
-    _loaded = memory;
+    if (_hydrated) return;
+    _hydrated = true;
     _titleController.text = memory.title;
     _descriptionController.text = memory.description ?? '';
     _eventDate = memory.eventDate;
@@ -51,9 +49,12 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final memoryAsync = ref.watch(memoriesStreamProvider).whenData(
-          (memories) => memories.where((m) => m.id == widget.memoryId).firstOrNull,
-        );
+    final memoriesAsync = ref.watch(memoriesStreamProvider);
+    final memory = memoriesAsync.valueOrNull
+        ?.where((m) => m.id == widget.memoryId)
+        .firstOrNull;
+
+    if (memory != null) _hydrate(memory);
 
     return Scaffold(
       appBar: AppBar(
@@ -62,26 +63,48 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
           IconButton(
             icon: const Icon(Icons.delete_outline),
             tooltip: 'Delete',
-            onPressed: _loaded == null ? null : _confirmDelete,
+            // Driven off the streamed value, not a field set during the
+            // body build — named arguments evaluate in source order, so
+            // an `appBar:` reading state written by `body:` would always
+            // see the previous frame's value and stay disabled.
+            onPressed: memory == null ? null : _confirmDelete,
           ),
         ],
       ),
-      body: memoryAsync.when(
+      body: memoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) =>
             const Center(child: Text("Couldn't load this memory.")),
-        data: (memory) {
+        data: (_) {
           if (memory == null) {
-            // Deleted from elsewhere, or bad id.
             return const Center(child: Text('This memory no longer exists.'));
           }
-          _hydrate(memory);
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (memory.sourceUri != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        File(memory.sourceUri!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stack) => Container(
+                          height: 180,
+                          alignment: Alignment.center,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                          child: const Text('Image unavailable'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                   TextField(
                     controller: _titleController,
                     decoration: const InputDecoration(labelText: 'Title'),
@@ -96,8 +119,18 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
                     onChanged: (_) => setState(() => _dirty = true),
                   ),
                   const SizedBox(height: 16),
-                  Text('Category: ${memory.category}',
-                      style: Theme.of(context).textTheme.bodyMedium),
+                  _DateField(
+                    value: _eventDate,
+                    onChanged: (date) => setState(() {
+                      _eventDate = date;
+                      _dirty = true;
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Category: ${memory.category}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 24),
                   if (_dirty)
                     FilledButton(
@@ -121,15 +154,25 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
 
   Future<void> _save(MemoryObject current) async {
     setState(() => _saving = true);
+    final description = _descriptionController.text.trim();
     final updated = current.copyWith(
       title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
-      clearDescription: _descriptionController.text.trim().isEmpty,
+      description: description,
+      clearDescription: description.isEmpty,
+      // Without these two the date silently reverted to whatever was
+      // stored, so clearing or changing a date in the UI did nothing.
+      eventDate: _eventDate,
+      clearEventDate: _eventDate == null,
       updatedAt: DateTime.now(),
     );
     try {
       await ref.read(memoryRepositoryProvider).save(updated);
       if (mounted) setState(() => _dirty = false);
+    } on AppError catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.userMessage)));
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -153,10 +196,49 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
         ],
       ),
     );
-    if (confirmed == true) {
-      await ref.read(memoryRepositoryProvider).delete(widget.memoryId);
-      if (mounted) Navigator.of(context).pop();
-    }
+    if (confirmed != true) return;
+
+    // The repository also removes any stored image for this memory.
+    await ref.read(memoryRepositoryProvider).delete(widget.memoryId);
+    if (mounted) Navigator.of(context).pop();
+  }
+}
+
+class _DateField extends StatelessWidget {
+  const _DateField({required this.value, required this.onChanged});
+
+  final DateTime? value;
+  final ValueChanged<DateTime?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: value ?? DateTime.now(),
+          firstDate: DateTime(DateTime.now().year - 5),
+          lastDate: DateTime(DateTime.now().year + 20),
+        );
+        if (picked != null) onChanged(picked);
+      },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Important date',
+          suffixIcon: value == null
+              ? const Icon(Icons.calendar_today_outlined)
+              : IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => onChanged(null),
+                ),
+        ),
+        child: Text(
+          value == null
+              ? 'No date set'
+              : '${value!.day.toString().padLeft(2, '0')}/${value!.month.toString().padLeft(2, '0')}/${value!.year}',
+        ),
+      ),
+    );
   }
 }
 

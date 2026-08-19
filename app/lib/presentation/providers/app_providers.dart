@@ -26,7 +26,10 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 });
 
 final memoryRepositoryProvider = Provider<MemoryRepository>((ref) {
-  return DriftMemoryRepository(ref.watch(appDatabaseProvider));
+  return DriftMemoryRepository(
+    ref.watch(appDatabaseProvider),
+    attachments: ref.watch(attachmentStoreProvider),
+  );
 });
 
 final memoriesStreamProvider = StreamProvider<List<MemoryObject>>((ref) {
