@@ -7,7 +7,9 @@ import 'ai_provider.dart';
 /// app must remain fully usable for manual capture, browsing, and local
 /// reminders (see docs/AI_PROVIDERS.md risk note on BYOK adoption).
 class AIRouter {
-  AIRouter({AIProvider? activeProvider}) : _activeProvider = activeProvider;
+  /// Positional rather than named because the backing field is private
+  /// and Dart forbids a named parameter starting with an underscore.
+  AIRouter([this._activeProvider]);
 
   AIProvider? _activeProvider;
 

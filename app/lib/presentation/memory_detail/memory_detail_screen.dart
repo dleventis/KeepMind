@@ -50,9 +50,13 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final memoriesAsync = ref.watch(memoriesStreamProvider);
-    final memory = memoriesAsync.valueOrNull
-        ?.where((m) => m.id == widget.memoryId)
-        .firstOrNull;
+    // `.value` — Riverpod 3.x has no `valueOrNull`; `value` is already
+    // nullable (null while loading or on error).
+    final matches = memoriesAsync.value
+            ?.where((m) => m.id == widget.memoryId)
+            .toList() ??
+        const <MemoryObject>[];
+    final memory = matches.isEmpty ? null : matches.first;
 
     if (memory != null) _hydrate(memory);
 
@@ -240,8 +244,4 @@ class _DateField extends StatelessWidget {
       ),
     );
   }
-}
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
 }

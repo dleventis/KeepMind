@@ -38,13 +38,17 @@ class SchedulingResult {
 /// reminded".
 class ReminderScheduler {
   ReminderScheduler({
-    required ReminderRepository reminders,
-    required NotificationService notifications,
-  })  : _reminders = reminders,
-        _notifications = notifications;
+    required this.reminders,
+    required this.notifications,
+  });
 
-  final ReminderRepository _reminders;
-  final NotificationService _notifications;
+  // Public final rather than private. A named parameter cannot begin
+  // with an underscore, so an initializing formal is impossible for a
+  // private field passed by name — it would need a redundant initializer
+  // list instead. These are immutable injected collaborators; there is
+  // nothing to encapsulate.
+  final ReminderRepository reminders;
+  final NotificationService notifications;
 
   /// Plans and schedules reminders for a confirmed memory, replacing any
   /// it already had (so editing a date doesn't leave the old reminders
@@ -97,7 +101,7 @@ class ReminderScheduler {
     // Only ask for permission once we actually have something to
     // schedule — a prompt with nothing behind it gets denied, and on iOS
     // there is no second chance.
-    final granted = await _notifications.requestPermissions();
+    final granted = await notifications.requestPermissions();
 
     final created = <Reminder>[];
     for (final p in planned) {
@@ -118,7 +122,7 @@ class ReminderScheduler {
     // between the two, reconciliation at next launch re-registers from
     // the database — whereas an OS-registered notification with no row
     // behind it would be invisible to us forever.
-    await _reminders.saveAll(created);
+    await reminders.saveAll(created);
 
     if (granted) {
       for (var i = 0; i < created.length; i++) {
@@ -134,11 +138,11 @@ class ReminderScheduler {
   }
 
   Future<void> cancelFor(String memoryId) async {
-    final existing = await _reminders.remindersFor(memoryId);
+    final existing = await reminders.remindersFor(memoryId);
     for (final r in existing) {
-      await _notifications.cancel(r.notificationId);
+      await notifications.cancel(r.notificationId);
     }
-    await _reminders.deleteForMemory(memoryId);
+    await reminders.deleteForMemory(memoryId);
   }
 
   /// Re-registers everything the database says should be pending, and
@@ -156,8 +160,8 @@ class ReminderScheduler {
     tz.TZDateTime? now,
   }) async {
     final currentTime = now ?? tz.TZDateTime.now(tz.local);
-    final pending = await _reminders.pendingReminders();
-    final osPending = await _notifications.pendingNotificationIds();
+    final pending = await reminders.pendingReminders();
+    final osPending = await notifications.pendingNotificationIds();
 
     var reRegistered = 0;
     var markedElapsed = 0;
@@ -170,7 +174,7 @@ class ReminderScheduler {
         // reports taps, never deliveries. `elapsed` says exactly that and
         // nothing more — claiming "missed" here would libel every
         // reminder that was shown and swiped away.
-        await _reminders.updateStatus(reminder.id, ReminderStatus.elapsed);
+        await reminders.updateStatus(reminder.id, ReminderStatus.elapsed);
         markedElapsed++;
         continue;
       }
@@ -213,7 +217,7 @@ class ReminderScheduler {
     MemoryObject? memory,
     tz.TZDateTime triggerTime,
   ) async {
-    await _notifications.schedule(
+    await notifications.schedule(
       notificationId: reminder.notificationId,
       triggerTime: triggerTime,
       title: memory?.title ?? 'KeepMind reminder',

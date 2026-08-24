@@ -41,7 +41,8 @@ class MemoryObjects extends Table {
   IntColumn get confirmationStatus => integer()();
   IntColumn get sensitivity => integer().withDefault(const Constant(0))();
 
-  /// JSON-encoded Map<String, Object?> — category-specific fields.
+  /// JSON-encoded `Map<String, Object?>` — category-specific fields.
+  /// (Backticked: bare angle brackets are parsed as HTML in doc comments.)
   TextColumn get structuredData => text().withDefault(const Constant('{}'))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
 
@@ -56,9 +57,9 @@ class MemoryObjects extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Phase G will add this table when the reminder scheduler is built —
-/// declared here now so the schema-versioning story starts from a
-/// realistic shape. See docs/REMINDERS.md.
+/// Scheduled reminders (Phase G). Deliberately separate from the
+/// platform notification queue, which is treated as a cache of this
+/// table rather than a source of truth. See docs/REMINDERS.md.
 @DataClassName('ReminderRow')
 class Reminders extends Table {
   TextColumn get id => text()();
@@ -145,12 +146,11 @@ LazyDatabase _openConnection(SecureKeyStore keyStore) {
     return NativeDatabase.createInBackground(
       dbFile,
       setup: (rawDb) {
-        // See docs/DECISIONS.md ADR-0002 and
-        // https://drift.simonbinder.eu/platforms/encryption/ — this
-        // requires the SQLite3MultipleCiphers native asset configured in
-        // pubspec.yaml, verified locally before Phase B (see comment
-        // there; this sandbox couldn't reach pub.dev to confirm the exact
-        // current native-assets syntax).
+        // Requires the SQLite3MultipleCiphers native asset declared in
+        // pubspec.yaml's `hooks:` block — without it plain SQLite is
+        // bundled, this PRAGMA is silently ignored, and the database is
+        // written UNENCRYPTED. See docs/DECISIONS.md ADR-0002 and
+        // https://drift.simonbinder.eu/platforms/encryption/.
         rawDb.execute("PRAGMA key = '$key';");
         assert(_debugHasCipher(rawDb));
       },
