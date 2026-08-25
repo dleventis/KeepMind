@@ -5,9 +5,12 @@ import '../../data/local/database/app_database.dart';
 import '../../data/local/secure/secure_key_store.dart';
 import '../../data/notifications/local_notification_service.dart';
 import '../../data/ocr/mlkit_ocr_service.dart';
+import '../../data/purchases/revenuecat_entitlement_service.dart';
 import '../../data/repositories/memory_repository_drift_impl.dart';
 import '../../data/repositories/reminder_repository_drift_impl.dart';
 import '../../data/services/reminder_scheduler.dart';
+import '../../domain/entitlements/entitlement_service.dart';
+import '../../domain/entitlements/entitlements.dart';
 import '../../domain/entities/memory_object.dart';
 import '../../domain/repositories/memory_repository.dart';
 import '../../domain/repositories/reminder_repository.dart';
@@ -67,5 +70,37 @@ final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
   return ReminderScheduler(
     reminders: ref.watch(reminderRepositoryProvider),
     notifications: ref.watch(notificationServiceProvider),
+  );
+});
+
+// --- Entitlements / monetization (Phase K) -------------------------------
+
+final entitlementServiceProvider = Provider<EntitlementService>((ref) {
+  final service = RevenueCatEntitlementService();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+/// Current entitlements, defaulting to free until the store answers.
+/// Pessimistic by design: a network failure must never hand out premium,
+/// and because the free tier is fully usable, being briefly wrong costs
+/// the user nothing.
+final entitlementsProvider = StreamProvider<Entitlements>((ref) {
+  return ref.watch(entitlementServiceProvider).watch();
+});
+
+/// How many memories count against the free limit — the same set the
+/// Home list shows, so the number the user sees and the number enforced
+/// can never disagree.
+final activeMemoryCountProvider = Provider<int>((ref) {
+  return ref.watch(memoriesStreamProvider).value?.length ?? 0;
+});
+
+/// Whether another memory may be created right now.
+final canCreateMemoryProvider = Provider<bool>((ref) {
+  final isPremium = ref.watch(entitlementsProvider).value?.isPremium ?? false;
+  return FreeTierLimits.canCreateMemory(
+    currentCount: ref.watch(activeMemoryCountProvider),
+    isPremium: isPremium,
   );
 });

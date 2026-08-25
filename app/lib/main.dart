@@ -18,8 +18,14 @@ Future<void> main() async {
   // can schedule a reminder.
   await container.read(notificationServiceProvider).initialize();
 
+  // Entitlements are initialized without awaiting: the store can be slow
+  // or unreachable, and the app must open regardless. Until it answers,
+  // the user is treated as free tier — which is fully usable, so being
+  // briefly wrong costs them nothing.
+  unawaited(container.read(entitlementServiceProvider).initialize());
+
   // Re-register anything the OS dropped while we weren't running, and
-  // mark undelivered past reminders as missed. The database is the
+  // retire reminders whose moment has passed. The database is the
   // source of truth; the OS queue is only a cache of it (see
   // docs/REMINDERS.md). Deliberately not awaited into the first frame —
   // a slow reconcile must never delay app launch.

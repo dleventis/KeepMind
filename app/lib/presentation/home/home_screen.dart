@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../domain/entitlements/entitlements.dart';
 import '../../domain/entities/memory_object.dart';
 import '../capture/capture_screen.dart';
 import '../memory_detail/memory_detail_screen.dart';
+import '../paywall/paywall_screen.dart';
 import '../providers/app_providers.dart';
 
 /// Home screen. Phase A shipped only the empty state; Phase B adds the
@@ -17,31 +19,102 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final memoriesAsync = ref.watch(memoriesStreamProvider);
+    final isPremium =
+        ref.watch(entitlementsProvider).value?.isPremium ?? false;
+    final count = ref.watch(activeMemoryCountProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppConstants.appName)),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openCapture(context),
+        onPressed: () => _openCapture(context, ref),
         icon: const Icon(Icons.add),
         label: const Text(AppConstants.captureButtonLabel),
       ),
       body: SafeArea(
-        child: memoriesAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => const Center(
-            child: Text("Couldn't load your memories right now."),
-          ),
-          data: (memories) => memories.isEmpty
-              ? _EmptyState(onCapture: () => _openCapture(context))
-              : _MemoryList(memories: memories),
+        child: Column(
+          children: [
+            // Only appears in the last couple of slots. A persistent
+            // "7 of 10 used" counter would turn a calm screen into a
+            // meter the user feels watched by.
+            if (FreeTierLimits.shouldWarn(
+              currentCount: count,
+              isPremium: isPremium,
+            ))
+              _FreeTierNotice(
+                remaining: FreeTierLimits.remainingSlots(
+                      currentCount: count,
+                      isPremium: isPremium,
+                    ) ??
+                    0,
+                onSeeOptions: () => _openPaywall(context),
+              ),
+            Expanded(
+              child: memoriesAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => const Center(
+                  child: Text("Couldn't load your memories right now."),
+                ),
+                data: (memories) => memories.isEmpty
+                    ? _EmptyState(onCapture: () => _openCapture(context, ref))
+                    : _MemoryList(memories: memories),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _openCapture(BuildContext context) {
-    Navigator.of(context).push(
+  /// The limit is checked HERE rather than on save, so someone who has
+  /// run out is told before they photograph a document and fill in a
+  /// form — not after, with their work about to be thrown away.
+  Future<void> _openCapture(BuildContext context, WidgetRef ref) async {
+    if (!ref.read(canCreateMemoryProvider)) {
+      final purchased = await _openPaywall(context);
+      if (purchased != true) return;
+    }
+    if (!context.mounted) return;
+    await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const CaptureScreen()),
+    );
+  }
+
+  Future<bool?> _openPaywall(BuildContext context) {
+    return Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const PaywallScreen()),
+    );
+  }
+}
+
+/// A quiet heads-up in the last two free slots, not a nag.
+class _FreeTierNotice extends StatelessWidget {
+  const _FreeTierNotice({required this.remaining, required this.onSeeOptions});
+
+  final int remaining;
+  final VoidCallback onSeeOptions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      color: theme.colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              remaining == 0
+                  ? "You've used all your free memories."
+                  : remaining == 1
+                      ? '1 free memory left.'
+                      : '$remaining free memories left.',
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+          TextButton(onPressed: onSeeOptions, child: const Text('See options')),
+        ],
+      ),
     );
   }
 }

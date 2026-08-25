@@ -79,4 +79,26 @@ Format: each ADR is short — context, decision, consequences. Superseded ADRs a
 
 **Consequences:** Drops support for iOS 15.0–15.4. In practice that is a negligible share of devices, and on-device OCR is the core of the product — a version floor is a fair price. Android's `minSdk` (21 for ML Kit) is already satisfied by Flutter's default.
 
+## ADR-0008: Free tier capped at 10 memories; premium removes the cap
+
+**Date:** 2026-08-25
+**Status:** Accepted
+
+**Context:** Shipaton requires the RevenueCat SDK to power at least one real purchase, so the app needs a paid tier before 30 September. The brief warns against baking a pricing model into code (§41) and against dark patterns (§53). Candidates considered: gating photo capture + OCR, gating the number of reminders, a pure tip jar, and capping stored memories.
+
+**Decision:** Free = up to 10 active memories. Premium = unlimited. Everything else — photo capture, OCR, date extraction, all three reminder offsets — stays free at every tier.
+
+**Consequences:** Gating capture/OCR was rejected because a reviewer or judge on the free tier would never see what makes the product interesting. Gating reminders was rejected outright: reminders *are* the product promise, so limiting them edges into the dark patterns the brief forbids. A tip jar was rejected as giving no real revenue signal. The cap is enforced at the *capture entry point*, not on save, so a user who has run out is told before they photograph a document and fill in a form. Critically, the cap applies only to **creating** memories — reading, editing, and deleting existing ones is never gated, including for a lapsed subscriber sitting over the limit. Holding someone's own passport expiry hostage to a renewal is not a thing this app will do. `FreeTierLimits` is pure functions so all of this is unit-tested.
+
+## ADR-0009: iOS only for the Shipaton submission
+
+**Date:** 2026-08-25
+**Status:** Accepted
+
+**Context:** Shipaton requires the app to be genuinely live on a store by 30 Sept 2026. A new Google Play personal account cannot publish to production until it has run a closed test with 12 testers opted in *continuously* for 14 days, followed by up to 7 days of production-access review — up to 21 days of unavoidable wall-clock time, on top of ID verification. With ~36 days left and no Play account yet, closed testing would have had to be running by around 9 September.
+
+**Decision:** Ship iOS only for the contest. Android is deferred until after 30 September.
+
+**Consequences:** Removes the single tightest constraint in the plan and frees the remaining weeks for the app itself; Apple review is typically 24–48 hours, leaving room for a rejection and resubmission. Nothing in the codebase becomes iOS-specific — Flutter, Drift, ML Kit, and flutter_local_notifications all remain cross-platform, and the Android manifest work from Phase G stays in place — so Android is a store-logistics task later, not a re-engineering one. Cost: no Android users during the contest, and the Play testing clock still has to be started from scratch afterwards.
+
 <!-- Future ADRs go below this line, oldest first. -->
