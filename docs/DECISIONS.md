@@ -101,4 +101,45 @@ Format: each ADR is short — context, decision, consequences. Superseded ADRs a
 
 **Consequences:** Removes the single tightest constraint in the plan and frees the remaining weeks for the app itself; Apple review is typically 24–48 hours, leaving room for a rejection and resubmission. Nothing in the codebase becomes iOS-specific — Flutter, Drift, ML Kit, and flutter_local_notifications all remain cross-platform, and the Android manifest work from Phase G stays in place — so Android is a store-logistics task later, not a re-engineering one. Cost: no Android users during the contest, and the Play testing clock still has to be started from scratch afterwards.
 
+## ADR-0010: Export compliance — the app is not in Apple's documentation-free category
+
+**Date:** 2026-08-25
+**Status:** Open — decision required before the submission build
+
+**Context:** The encrypted database (ADR-0002) uses SQLite3MultipleCiphers,
+a third-party C library compiled into the binary, keyed via `PRAGMA key`.
+Apple's export compliance reference states that the only category needing
+no documentation in App Store Connect is "Your app uses encryption limited
+to that within the Apple operating system." Mindkeep does not qualify: it
+ships its own crypto rather than calling CryptoKit or relying solely on iOS
+Data Protection.
+
+Apple further states that a **French encryption declaration form is
+required if the app is distributed on the App Store in France**, and lists
+Secure Storage as a main item of French control — which is precisely what
+this app is.
+
+**Options:**
+
+1. **Exclude France for 1.0.** Removes the French declaration requirement
+   per Apple's own wording, costs one market with no users in it yet, and
+   is reversible once the paperwork is done.
+2. **File the French declaration** and ship there from day one. More work
+   before a deadline that is already tight.
+3. **Drop the bundled cipher** and rely on iOS Data Protection
+   (`NSFileProtectionComplete`) alone, which would put the app in the
+   documentation-free category. Rejected as a v1 move: it reverses
+   ADR-0002, weakens the at-rest story the privacy policy and App Store
+   description both make, and does not carry over to Android later.
+
+**Decision:** Pending. Whichever is chosen, the value of
+`ITSAppUsesNonExemptEncryption` in `ios/Runner/Info.plist` is an export
+determination signed by the developer, not an engineering default, and is
+deliberately left unset until that determination is made.
+
+**Consequences:** Until the key is set, every upload asks the export
+questions interactively, and the answers attach to that build. Build 1 was
+answered ad hoc and is a throwaway; the submission build must carry a
+considered answer.
+
 <!-- Future ADRs go below this line, oldest first. -->

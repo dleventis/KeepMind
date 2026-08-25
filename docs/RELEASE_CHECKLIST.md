@@ -206,15 +206,26 @@ limits.
   Purchases → not linked to identity, not used for tracking
 - Age rating: 4+
 
-**Export compliance.** You will be asked whether the app uses encryption.
-It does: the local database is encrypted with SQLite3MultipleCiphers.
-Standard cryptography used only to protect the user's own data on their
-own device is normally exempt, but *the determination is yours to make,
-not mine* — I am not qualified to give you a legal answer, and it is a
-declaration you sign. Read Apple's export compliance documentation, and
-if it stays ambiguous, ask someone who does this professionally. Adding
-`ITSAppUsesNonExemptEncryption` to `Info.plist` afterwards stops it being
-asked on every upload.
+**Export compliance.** See ADR-0010 — this needs deciding before the
+submission build, and it is less routine than it first looks.
+
+Apple's reference says the only category requiring **no** documentation is
+"encryption limited to that within the Apple operating system". Mindkeep
+does not qualify: it compiles SQLite3MultipleCiphers into the binary
+rather than using only iOS Data Protection. Apple also requires a **French
+encryption declaration** for apps distributed in France, and names Secure
+Storage as a main item of French control — exactly what this app is.
+
+So there is a real choice to make: exclude France for 1.0, or file the
+declaration. Excluding is reversible and costs a market with no users in
+it yet.
+
+The value of `ITSAppUsesNonExemptEncryption` is the export determination
+itself, signed by you, so it is deliberately absent from `Info.plist`
+rather than defaulted. Until it is set, every upload asks interactively
+and the answer attaches to that build. *The determination is not mine to
+make* — read Apple's documentation, and if it stays ambiguous, ask someone
+who does this professionally.
 
 ---
 
