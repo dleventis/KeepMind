@@ -1,12 +1,27 @@
-License: TBD.
+Copyright (c) 2026 Dimitrios Leventis. All rights reserved.
 
-No license has been selected yet for this project. Until a license is chosen
-and this file is replaced with its full text, all rights to this code are
-reserved by the copyright holder(s); it is not licensed for reuse,
-redistribution, or modification by third parties.
+Mindkeep
 
-When ready to choose, common options for a closed-source consumer app with
-an eventual App Store / Play Store release include keeping the repository
-private with no OSS license at all (most common for this kind of product),
-or, if any portion is later open-sourced, a permissive license such as MIT
-or Apache-2.0 for that portion specifically.
+This repository is publicly viewable. Public visibility does not grant a
+licence. No permission is given to use, copy, modify, merge, publish,
+distribute, sublicense, or sell any part of this software, or to create
+derivative works from it, without prior written permission from the
+copyright holder.
+
+You may read the source, and reference it for personal study, evaluation,
+or review.
+
+Note that GitHub's Terms of Service separately permit other GitHub users to
+view and fork any public repository. That permission comes from hosting the
+code on GitHub and is not extended by this licence.
+
+Third-party dependencies included or referenced by this project remain
+subject to their own licences, which are not affected by this notice.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
