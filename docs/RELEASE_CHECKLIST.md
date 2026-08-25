@@ -120,6 +120,37 @@ all — see §45 of the brief.
 
 ---
 
+## 3b. The dependency chain nobody tells you about
+
+The steps above look independent. They are not, and the order matters
+because one requirement sits at the end of a chain:
+
+**A subscription cannot be submitted without a review screenshot of the
+purchase as it appears inside the app.** That screenshot needs a working
+paywall showing a real price. A real price needs RevenueCat configured
+with a current offering. RevenueCat needs the App Store Connect key *and*
+the product to exist. So:
+
+1. Create the subscription group **and an auto-renewable subscription
+   inside it** — a group alone cannot be submitted ("New subscription
+   groups must be submitted with an auto-renewable subscription from
+   within that group").
+2. Configure RevenueCat: key, product import, entitlement `premium`,
+   offering marked current.
+3. Run the app with the key and open the paywall:
+   `flutter run --dart-define=REVENUECAT_IOS_KEY=appl_...`
+4. Screenshot that paywall. Attach it to the subscription's Review
+   Information.
+5. Only now can the subscription be added to a submission — and it must
+   go in **together with an app version**, because a first subscription
+   is always reviewed alongside a build.
+
+Skipping ahead to the submission screen before step 4 produces "Unable to
+Submit for Review" with no explanation of which link in the chain is
+missing.
+
+---
+
 ## 4. Build with the key and test the purchase
 
 ```sh
