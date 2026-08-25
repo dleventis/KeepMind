@@ -11,15 +11,26 @@ class AppConstants {
       'Nothing you need to remember right now.';
   static const String captureButtonLabel = '+ Remember something';
 
-  /// App Store review requires a reachable privacy policy, and — for
-  /// auto-renewable subscriptions — terms of use (an EULA). These are
-  /// placeholders: submitting with them unresolved is a guaranteed
-  /// rejection, so they must point at real, live pages before the build
-  /// is sent for review.
+  /// App Store review requires a subscription app to expose a reachable
+  /// privacy policy and terms of use (Guideline 3.1.2). Both are linked
+  /// from Settings.
   ///
-  /// TODO(pre-submission): replace with the real hosted URLs.
-  static const String privacyPolicyUrl = 'https://keepmind.app/privacy';
-  static const String termsOfUseUrl = 'https://keepmind.app/terms';
+  /// The policy is served from this repo's own docs/ folder via GitHub
+  /// Pages — no domain to buy or renew, and it stays version-controlled
+  /// alongside the behaviour it describes.
+  ///
+  /// TODO(pre-submission): enable GitHub Pages for this repo
+  /// (Settings -> Pages -> Deploy from a branch -> main, /docs) and check
+  /// this URL loads in a browser. A dead link here is a certain rejection.
+  static const String privacyPolicyUrl =
+      'https://dleventis.github.io/KeepMind/privacy.html';
+
+  /// Apple's Standard EULA. Apple explicitly supports linking to this
+  /// instead of writing a custom agreement, so there is one fewer page to
+  /// host and keep alive. Replace only if KeepMind ever needs terms that
+  /// differ from the standard ones.
+  static const String termsOfUseUrl =
+      'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
   /// Apple's canonical deep link to the user's own subscription
   /// management. Review expects a way out of a subscription that is not
