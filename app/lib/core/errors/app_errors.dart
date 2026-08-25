@@ -76,7 +76,7 @@ class PermissionError extends AppError {
   const PermissionError({required String permission})
     : super(
         userMessage:
-            'KeepMind needs permission to do that. You can grant it in Settings.',
+            'Mindkeep needs permission to do that. You can grant it in Settings.',
         debugMessage: 'Permission denied: $permission',
       );
 }
@@ -85,7 +85,7 @@ class NotificationPermissionError extends AppError {
   const NotificationPermissionError()
     : super(
         userMessage:
-            "KeepMind can't remind you without notification permission. "
+            "Mindkeep can't remind you without notification permission. "
             'You can enable it in Settings.',
         debugMessage: 'Notification permission denied',
       );

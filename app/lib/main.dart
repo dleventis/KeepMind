@@ -32,7 +32,7 @@ Future<void> main() async {
   unawaited(_reconcileReminders(container));
 
   runApp(
-    UncontrolledProviderScope(container: container, child: const KeepMindApp()),
+    UncontrolledProviderScope(container: container, child: const MindkeepApp()),
   );
 }
 
@@ -40,7 +40,7 @@ Future<void> _reconcileReminders(ProviderContainer container) async {
   try {
     // Memories are loaded and passed in so re-registered notifications
     // keep their real title. Without them every reminder the OS dropped
-    // would come back as a useless "KeepMind reminder" — precisely the
+    // would come back as a useless "Mindkeep reminder" — precisely the
     // path reconciliation exists to rescue.
     final memories = await container
         .read(memoryRepositoryProvider)

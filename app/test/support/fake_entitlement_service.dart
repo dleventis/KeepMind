@@ -16,7 +16,7 @@ class FakeEntitlementService implements EntitlementService {
   List<PurchaseOption> options = const [
     PurchaseOption(
       id: 'premium_monthly',
-      title: 'KeepMind Premium',
+      title: 'Mindkeep Premium',
       priceString: '2.99 EUR',
     ),
   ];

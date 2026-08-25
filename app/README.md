@@ -1,4 +1,4 @@
-# KeepMind — Flutter app
+# Mindkeep — Flutter app
 
 See the repository root `README.md` for how to generate the missing `android/`
 and `ios/` platform folders locally, and `../docs/` for architecture,

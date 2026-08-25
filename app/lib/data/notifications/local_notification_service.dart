@@ -34,7 +34,7 @@ class LocalNotificationService implements NotificationService {
   static const String _channelId = 'keepmind_reminders';
   static const String _channelName = 'Reminders';
   static const String _channelDescription =
-      'Reminders for things you asked KeepMind to remember.';
+      'Reminders for things you asked Mindkeep to remember.';
 
   @override
   Future<void> initialize() => _initialization ??= _doInitialize();

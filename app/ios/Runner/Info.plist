@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>KeepMind</string>
+	<string>Mindkeep</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,9 +27,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>KeepMind uses the camera so you can photograph a document and have its dates read automatically. Photos stay on your device.</string>
+	<string>Mindkeep uses the camera so you can photograph a document and have its dates read automatically. Photos stay on your device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>KeepMind needs access to your photos so you can turn an existing screenshot or picture into a reminder. Photos stay on your device.</string>
+	<string>Mindkeep needs access to your photos so you can turn an existing screenshot or picture into a reminder. Photos stay on your device.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

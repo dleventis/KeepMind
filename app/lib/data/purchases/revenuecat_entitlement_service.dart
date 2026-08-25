@@ -15,7 +15,7 @@ import '../../domain/entitlements/entitlements.dart';
 /// and nothing else (brief §40).
 ///
 /// Failure policy throughout: if the store cannot be reached, fall back
-/// to the free tier and keep going. KeepMind is local-first — a user with
+/// to the free tier and keep going. Mindkeep is local-first — a user with
 /// no network must still be able to open the app, read their memories,
 /// and get their reminders.
 class RevenueCatEntitlementService implements EntitlementService {

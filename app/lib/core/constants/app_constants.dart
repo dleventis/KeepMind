@@ -4,9 +4,9 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'KeepMind';
+  static const String appName = 'Mindkeep';
   static const String tagline =
-      'Send it to KeepMind now. Remember it when it matters.';
+      'Send it to Mindkeep now. Remember it when it matters.';
   static const String emptyHomeMessage =
       'Nothing you need to remember right now.';
   static const String captureButtonLabel = '+ Remember something';
@@ -27,7 +27,7 @@ class AppConstants {
 
   /// Apple's Standard EULA. Apple explicitly supports linking to this
   /// instead of writing a custom agreement, so there is one fewer page to
-  /// host and keep alive. Replace only if KeepMind ever needs terms that
+  /// host and keep alive. Replace only if Mindkeep ever needs terms that
   /// differ from the standard ones.
   static const String termsOfUseUrl =
       'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';

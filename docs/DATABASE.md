@@ -20,4 +20,4 @@ Drift's schema versioning (`schemaVersion` + `MigrationStrategy`) from day one, 
 
 ## Full-text search
 
-Deferred until Phase H (Ask KeepMind); Drift supports SQLite FTS5 virtual tables when that's needed, which is preferred over pulling in an external search dependency for the MVP.
+Deferred until Phase H (Ask Mindkeep); Drift supports SQLite FTS5 virtual tables when that's needed, which is preferred over pulling in an external search dependency for the MVP.

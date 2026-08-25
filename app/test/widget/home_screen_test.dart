@@ -75,7 +75,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Take a photo'), findsOneWidget);
-      expect(find.text('KeepMind Premium'), findsNothing);
+      expect(find.text('Mindkeep Premium'), findsNothing);
     });
 
     testWidgets('shows the paywall instead of capture once the limit is hit', (
@@ -94,7 +94,7 @@ void main() {
 
       // Hit BEFORE the capture flow, so nobody photographs a document and
       // fills in a form only to be told it cannot be saved.
-      expect(find.text('KeepMind Premium'), findsOneWidget);
+      expect(find.text('Mindkeep Premium'), findsOneWidget);
       expect(find.text('Take a photo'), findsNothing);
     });
 

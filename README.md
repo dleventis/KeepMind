@@ -1,8 +1,8 @@
-# KeepMind
+# Mindkeep
 
-> Send it to KeepMind now. Remember it when it matters.
+> Send it to Mindkeep now. Remember it when it matters.
 
-KeepMind is a personal prospective-memory application: capture a document, screenshot, or thought in a few seconds, and let KeepMind extract the dates, amounts, and actions that matter, then remind you deterministically when it's time to act. Names and taglines in this repo are provisional.
+Mindkeep is a personal prospective-memory application: capture a document, screenshot, or thought in a few seconds, and let Mindkeep extract the dates, amounts, and actions that matter, then remind you deterministically when it's time to act. Names and taglines in this repo are provisional.
 
 This repository is at **Phase B** (local memory CRUD) of the development plan in [`docs/TECHNICAL_FOUNDATION_PLAN.md`](docs/TECHNICAL_FOUNDATION_PLAN.md). Nothing here is production-ready; the app currently supports typing in a memory, viewing/editing/deleting it, and persisting it in the encrypted local database — no camera, OCR, AI extraction, or reminders yet.
 

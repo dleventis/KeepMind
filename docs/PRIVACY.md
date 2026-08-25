@@ -18,7 +18,7 @@ LOCAL DEVICE
 
 `MemoryObject.sensitivity` will support at minimum: `NORMAL`, `PERSONAL`, `FINANCIAL`, `MEDICAL`, `IDENTITY`. Rules for which categories can be auto-sent to cloud AI providers without an extra confirmation step are a Phase I product decision, not an engineering default — until that decision is made, the safe default is to always ask.
 
-## What KeepMind never does
+## What Mindkeep never does
 
 Silently sends document content to analytics. Assumes a date it isn't confident about. Requires a cloud account for core local functionality. Reuses developer-owned AI credentials to process user documents without explicit, disclosed consent.
 

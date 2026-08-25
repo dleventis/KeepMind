@@ -1,6 +1,6 @@
 # AI Providers
 
-KeepMind is AI-provider-independent by design (master brief, section 11–12). This document tracks the provider abstraction and the rules around it; see `app/lib/ai/` for the code.
+Mindkeep is AI-provider-independent by design (master brief, section 11–12). This document tracks the provider abstraction and the rules around it; see `app/lib/ai/` for the code.
 
 ## Abstraction
 
@@ -20,7 +20,7 @@ Live HTTP implementations are Phase E work, not part of this skeleton. Each stub
 ## Rules that apply to every provider implementation
 
 1. **BYOK by default.** Do not assume a consumer subscription (ChatGPT Plus, Claude Pro, Gemini Advanced) grants API access — only implement an auth mechanism a provider has documented as officially supported for this use case.
-2. **Never route through developer-owned credentials** except for a possible future, clearly-labeled "KeepMind AI" managed option the user opts into explicitly.
+2. **Never route through developer-owned credentials** except for a possible future, clearly-labeled "Mindkeep AI" managed option the user opts into explicitly.
 3. **Structured output only.** Every provider call that feeds application logic must return a response validated against the schema in `ai/models/ai_extraction_result.dart`. Malformed responses are rejected, not repaired by guessing.
 4. **No fabricated dates.** If a provider's response doesn't confidently identify a date, the extraction result carries `confidence: unknown` and the UI must say so explicitly rather than defaulting to "today" or omitting the field silently.
 5. **Prompt-injection defense.** Document/OCR text is always passed to a provider as clearly delimited, labeled *untrusted content*, separate from system instructions. See `docs/SECURITY.md`.

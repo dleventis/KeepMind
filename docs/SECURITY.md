@@ -7,7 +7,7 @@
 | Stolen/unlocked phone | OS biometric app-lock (Phase I) + at-rest DB encryption |
 | Malicious co-installed app | Secrets only ever live in Keychain/Keystore via `flutter_secure_storage`; never written to app-private plaintext files, logs, or analytics |
 | Compromised device backup | Relies on the OS's own encrypted-backup handling of Keychain/Keystore entries; no custom backup path that could bypass it |
-| Leaked provider API key | BYOK — KeepMind's servers never see it; secure-storage-only persistence; never logged |
+| Leaked provider API key | BYOK — Mindkeep's servers never see it; secure-storage-only persistence; never logged |
 | Database extraction (rooted/jailbroken device) | SQLite3MultipleCiphers encryption (see ADR-0002 in `docs/DECISIONS.md`) |
 | Malicious/booby-trapped document | Treated as untrusted input end-to-end; OCR output is text, not executed |
 | Prompt injection embedded in OCR'd document text | System/document separation in every AI prompt (see below); structured-output validator rejects anything that doesn't match the expected schema |
@@ -30,7 +30,7 @@ A document containing text like "ignore previous instructions and..." is data, n
 
 ## API key handling
 
-Never log, analytics-track, commit, or transmit to KeepMind's own servers. See `docs/AI_PROVIDERS.md` for the full provider-key lifecycle (add / test connection / change / delete / disconnect).
+Never log, analytics-track, commit, or transmit to Mindkeep's own servers. See `docs/AI_PROVIDERS.md` for the full provider-key lifecycle (add / test connection / change / delete / disconnect).
 
 ## What's explicitly deferred past Phase A
 

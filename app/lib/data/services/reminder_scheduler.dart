@@ -218,7 +218,7 @@ class ReminderScheduler {
     await notifications.schedule(
       notificationId: reminder.notificationId,
       triggerTime: triggerTime,
-      title: memory?.title ?? 'KeepMind reminder',
+      title: memory?.title ?? 'Mindkeep reminder',
       body: _bodyFor(reminder, memory),
       payload: reminder.memoryId,
     );

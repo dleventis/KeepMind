@@ -49,7 +49,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('KeepMind Premium'),
+        title: const Text('Mindkeep Premium'),
         actions: [
           TextButton(
             onPressed: _busy ? null : _restore,

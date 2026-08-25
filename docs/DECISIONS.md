@@ -2,12 +2,12 @@
 
 Format: each ADR is short — context, decision, consequences. Superseded ADRs are marked, not deleted.
 
-## ADR-0001: Technical foundation for KeepMind
+## ADR-0001: Technical foundation for Mindkeep
 
 **Date:** 2026-08-13
 **Status:** Accepted
 
-**Context:** KeepMind needs a cross-platform mobile stack, local database, encryption approach, OCR approach, notification architecture, AI provider abstraction, secure key storage, state management, and a decision on whether an MVP backend is required. Full reasoning is in `docs/TECHNICAL_FOUNDATION_PLAN.md`.
+**Context:** Mindkeep needs a cross-platform mobile stack, local database, encryption approach, OCR approach, notification architecture, AI provider abstraction, secure key storage, state management, and a decision on whether an MVP backend is required. Full reasoning is in `docs/TECHNICAL_FOUNDATION_PLAN.md`.
 
 **Decision:** Flutter (stable channel); layered presentation/domain/data + ai architecture; Drift over `NativeDatabase` with SQLite3MultipleCiphers for the encrypted local database; `flutter_secure_storage` for the DB encryption key and BYOK provider API keys; `google_mlkit_text_recognition` for on-device OCR on both platforms; `flutter_local_notifications` + `timezone` for deterministic, reboot-safe local reminders; Riverpod for state management/DI; no backend for the MVP (Phases A–I are fully local-first).
 

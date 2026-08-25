@@ -259,7 +259,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
 /// cases that matter: permission refused, and offsets already in the past.
 String? _reminderNotice(SchedulingResult result) {
   if (!result.permissionGranted) {
-    return 'Saved. Turn on notifications in Settings and KeepMind can remind you.';
+    return 'Saved. Turn on notifications in Settings and Mindkeep can remind you.';
   }
   if (result.scheduled.isEmpty) {
     return 'Saved. That date is too soon for the reminders you picked.';
