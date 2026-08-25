@@ -53,6 +53,10 @@ dependencies:
   # which mandates the RevenueCat SDK power at least one real purchase.
   purchases_flutter: ^10.9.1
 
+  # Opening the privacy policy / terms / subscription-management links
+  # that App Store review requires to be reachable.
+  url_launcher: ^6.3.2
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

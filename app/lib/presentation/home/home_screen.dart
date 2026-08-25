@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
-import '../../domain/entitlements/entitlements.dart';
 import '../../domain/entities/memory_object.dart';
+import '../../domain/entitlements/entitlements.dart';
 import '../capture/capture_screen.dart';
 import '../memory_detail/memory_detail_screen.dart';
 import '../paywall/paywall_screen.dart';
 import '../providers/app_providers.dart';
+import '../settings/settings_screen.dart';
 
 /// Home screen. Phase A shipped only the empty state; Phase B adds the
 /// actual memory list, still deliberately calm — no counts of overdue
@@ -23,7 +24,18 @@ class HomeScreen extends ConsumerWidget {
     final count = ref.watch(activeMemoryCountProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppConstants.appName)),
+      appBar: AppBar(
+        title: const Text(AppConstants.appName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Settings',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openCapture(context, ref),
         icon: const Icon(Icons.add),
