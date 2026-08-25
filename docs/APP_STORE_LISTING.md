@@ -7,8 +7,14 @@ limits; do not lengthen without re-checking.
 
 ## Name (limit 30)
 ```
-Mindkeep: Remember Anything
+Mindkeep: Expiry Reminders
 ```
+Do not shorten this back to "Mindkeep". Two apps already hold that token
+on the store ("MindKeep Pro" and "MindKeep: Private AI"), and App Store
+Connect rejects the bare word. Apple checks the whole name string, not
+the first word, which is why those two coexist and why the qualifier
+clears it. The home-screen name (`CFBundleDisplayName`) stays plain
+"Mindkeep" — the qualifier only exists in the store listing.
 
 ## Subtitle (limit 30)
 ```
@@ -22,11 +28,14 @@ Save a photo, document, date or thought. Mindkeep finds what matters and reminds
 
 ## Keywords (limit 100, comma-separated, no spaces)
 ```
-expiry,renewal,passport,insurance,warranty,document,deadline,subscription,trial,scan,expire,remind
+renewal,passport,insurance,warranty,document,deadline,subscription,trial,scan,expire,visa,license
 ```
-Deliberately excludes "reminder", "memory" and "Mindkeep" — Apple already
-indexes your app name and subtitle, so repeating those words wastes
-characters that could cover a search you don't otherwise rank for.
+97/100. Deliberately excludes "reminder", "memory", "expiry" and
+"Mindkeep" — Apple already indexes the app name and subtitle, so
+repeating those words wastes characters that could cover a search you
+don't otherwise rank for. "expiry" and "remind" were dropped when the
+name changed to "Mindkeep: Expiry Reminders", which freed the room for
+"visa" and "license".
 
 ## Description (limit 4000)
 ```

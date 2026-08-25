@@ -16,7 +16,7 @@ Fixed values, for copy-paste:
 |---|---|
 | Bundle ID | `com.dleventis.keepmind` |
 | Display name (on the home screen) | `Mindkeep` |
-| App Store name | `Mindkeep: Remember Anything` |
+| App Store name | `Mindkeep: Expiry Reminders` |
 | Version / build | `1.0.0` / `1` (from `app/pubspec.yaml`) |
 | RevenueCat entitlement ID | `premium` |
 | Build-time key define | `REVENUECAT_IOS_KEY` |
@@ -53,7 +53,8 @@ until this push lands. **App Review will open that URL.**
 My Apps → **+** → New App.
 
 - Platform: iOS
-- Name: `Mindkeep: Remember Anything`
+- Name: `Mindkeep: Expiry Reminders` — the bare word `Mindkeep` is
+  rejected; see `docs/APP_STORE_LISTING.md`
 - Primary language: English (UK) or (US) — pick one and keep the
   screenshots consistent with it
 - Bundle ID: select `com.dleventis.keepmind` (it appears once the app ID
