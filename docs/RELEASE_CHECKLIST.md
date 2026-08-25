@@ -231,6 +231,36 @@ claim (`docs/DECISIONS.md` ADR-0006).
 
 ---
 
+## Appendix — regenerating the launch image
+
+`flutter build ipa` warns if the launch image is still Flutter's
+placeholder. The current one is derived from the app icon; if the icon
+changes, regenerate it rather than editing the PNGs by hand:
+
+```sh
+cd app/ios/Runner
+python3 - <<'EOF'
+from PIL import Image, ImageDraw
+src = Image.open('Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png').convert('RGB')
+for scale, name in ((1,'LaunchImage.png'),(2,'LaunchImage@2x.png'),(3,'LaunchImage@3x.png')):
+    size, ss = 120*scale, 120*scale*4
+    icon = src.resize((ss, ss), Image.LANCZOS)
+    mask = Image.new('L', (ss, ss), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0,0,ss-1,ss-1], radius=int(ss*0.2237), fill=255)
+    icon.putalpha(mask)
+    icon.resize((size, size), Image.LANCZOS).save(f'Assets.xcassets/LaunchImage.imageset/{name}')
+EOF
+```
+
+The 0.2237 ratio is the iOS icon corner radius, so the launch image reads
+as the app's own icon rather than a floating square. The surrounding
+colour is the `LaunchBackground` colour set, which has light and dark
+variants matching the app's Material 3 surface — keep those in step with
+`app/lib/core/theme/app_theme.dart`, or the launch screen will flash a
+different shade before the first frame draws.
+
+---
+
 ## 9. Shipaton submission
 
 Separate from Apple. Register the app on the Shipaton entry form with the
