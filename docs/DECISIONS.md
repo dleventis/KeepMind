@@ -104,7 +104,7 @@ Format: each ADR is short — context, decision, consequences. Superseded ADRs a
 ## ADR-0010: Export compliance — the app is not in Apple's documentation-free category
 
 **Date:** 2026-08-25
-**Status:** Open — decision required before the submission build
+**Status:** Accepted (option 1) — France excluded for 1.0
 
 **Context:** The encrypted database (ADR-0002) uses SQLite3MultipleCiphers,
 a third-party C library compiled into the binary, keyed via `PRAGMA key`.
@@ -132,14 +132,21 @@ this app is.
    ADR-0002, weakens the at-rest story the privacy policy and App Store
    description both make, and does not carry over to Android later.
 
-**Decision:** Pending. Whichever is chosen, the value of
-`ITSAppUsesNonExemptEncryption` in `ios/Runner/Info.plist` is an export
-determination signed by the developer, not an engineering default, and is
-deliberately left unset until that determination is made.
+**Decision:** Option 1. France and the French overseas territories are
+deselected in App Store Connect → Pricing and Availability for 1.0, which
+removes the French declaration requirement per Apple's own wording. Revisit
+after launch, when filing the declaration is a calm afternoon rather than a
+deadline task.
 
-**Consequences:** Until the key is set, every upload asks the export
-questions interactively, and the answers attach to that build. Build 1 was
-answered ad hoc and is a throwaway; the submission build must carry a
-considered answer.
+This settles only the French half. The value of
+`ITSAppUsesNonExemptEncryption` in `ios/Runner/Info.plist` remains an
+export determination signed by the developer, not an engineering default,
+and is deliberately left unset until that determination is made.
+
+**Consequences:** No French users until the declaration is filed and the
+territories are re-enabled — a store setting, not a rebuild. Until the
+plist key is set, every upload asks the US export questions interactively
+and the answers attach to that build. Build 1 was answered ad hoc and is a
+throwaway; the submission build must carry a considered answer.
 
 <!-- Future ADRs go below this line, oldest first. -->
