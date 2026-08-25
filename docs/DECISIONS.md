@@ -149,4 +149,24 @@ plist key is set, every upload asks the US export questions interactively
 and the answers attach to that build. Build 1 was answered ad hoc and is a
 throwaway; the submission build must carry a considered answer.
 
+## ADR-0011: iPhone only for 1.0 (TARGETED_DEVICE_FAMILY = 1)
+
+**Date:** 2026-08-25
+**Status:** Accepted
+
+**Context:** Flutter's iOS template ships `TARGETED_DEVICE_FAMILY = "1,2"`,
+so the app declared iPad support by default rather than by decision. App
+Store Connect then demanded a separate 13-inch iPad screenshot set before
+review could start.
+
+**Decision:** `TARGETED_DEVICE_FAMILY = "1"` — iPhone only for 1.0.
+
+**Consequences:** The iPad screenshot requirement disappears, and so does
+a rejection risk: every screen was laid out for a phone and none has been
+tested at 2064×2752, where an unadapted phone layout reads as stretched
+and unfinished. iPad users can still run the app in iPhone compatibility
+mode. Reversing this is one line plus an iPad screenshot set, so it is a
+deferral rather than a door closing. Requires a new build — build 1 was
+uploaded as universal.
+
 <!-- Future ADRs go below this line, oldest first. -->
