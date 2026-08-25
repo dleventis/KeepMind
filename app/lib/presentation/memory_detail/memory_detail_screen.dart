@@ -52,9 +52,8 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
     final memoriesAsync = ref.watch(memoriesStreamProvider);
     // `.value` — Riverpod 3.x has no `valueOrNull`; `value` is already
     // nullable (null while loading or on error).
-    final matches = memoriesAsync.value
-            ?.where((m) => m.id == widget.memoryId)
-            .toList() ??
+    final matches =
+        memoriesAsync.value?.where((m) => m.id == widget.memoryId).toList() ??
         const <MemoryObject>[];
     final memory = matches.isEmpty ? null : matches.first;
 
@@ -100,9 +99,9 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
                         errorBuilder: (context, error, stack) => Container(
                           height: 180,
                           alignment: Alignment.center,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                           child: const Text('Image unavailable'),
                         ),
                       ),
@@ -174,8 +173,9 @@ class _MemoryDetailScreenState extends ConsumerState<MemoryDetailScreen> {
       if (mounted) setState(() => _dirty = false);
     } on AppError catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.userMessage)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.userMessage)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

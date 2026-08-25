@@ -37,10 +37,7 @@ class SchedulingResult {
 /// "we called schedule() once" is never treated as "the user will be
 /// reminded".
 class ReminderScheduler {
-  ReminderScheduler({
-    required this.reminders,
-    required this.notifications,
-  });
+  ReminderScheduler({required this.reminders, required this.notifications});
 
   // Public final rather than private. A named parameter cannot begin
   // with an underscore, so an initializing formal is impossible for a
@@ -85,10 +82,9 @@ class ReminderScheduler {
     // are invalid input rather than "would have been in the past" —
     // reporting them as the latter would put a confusing message in front
     // of the user.
-    final skipped = daysBefore
-        .where((d) => d >= 0 && !plannedOffsets.contains(d))
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final skipped =
+        daysBefore.where((d) => d >= 0 && !plannedOffsets.contains(d)).toList()
+          ..sort((a, b) => b.compareTo(a));
 
     if (planned.isEmpty) {
       return SchedulingResult(
@@ -106,16 +102,18 @@ class ReminderScheduler {
     final created = <Reminder>[];
     for (final p in planned) {
       final id = IdGenerator.generate();
-      created.add(Reminder(
-        id: id,
-        memoryId: memory.id,
-        triggerTime: p.triggerTime,
-        timezone: p.timezoneName,
-        status: ReminderStatus.scheduled,
-        createdAt: DateTime.now(),
-        daysBefore: p.daysBefore,
-        notificationId: ReminderPlanner.notificationIdFor(id),
-      ));
+      created.add(
+        Reminder(
+          id: id,
+          memoryId: memory.id,
+          triggerTime: p.triggerTime,
+          timezone: p.timezoneName,
+          status: ReminderStatus.scheduled,
+          createdAt: DateTime.now(),
+          daysBefore: p.daysBefore,
+          notificationId: ReminderPlanner.notificationIdFor(id),
+        ),
+      );
     }
 
     // Persist BEFORE registering with the OS. If the process dies

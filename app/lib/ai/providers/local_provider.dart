@@ -28,8 +28,10 @@ class LocalProvider implements AIProvider {
       _notImplemented();
 
   @override
-  Future<String> answerMemoryQuery(String question, {required String context}) =>
-      _notImplemented();
+  Future<String> answerMemoryQuery(
+    String question, {
+    required String context,
+  }) => _notImplemented();
 
   @override
   Future<List<double>> generateEmbedding(String text) => _notImplemented();

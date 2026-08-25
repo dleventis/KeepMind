@@ -32,8 +32,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   Future<void> _load() async {
-    final options =
-        await ref.read(entitlementServiceProvider).availableOptions();
+    final options = await ref
+        .read(entitlementServiceProvider)
+        .availableOptions();
     if (mounted) {
       setState(() {
         _options = options;
@@ -97,8 +98,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.lock_open_outlined,
-                        size: 20, color: theme.colorScheme.outline),
+                    Icon(
+                      Icons.lock_open_outlined,
+                      size: 20,
+                      color: theme.colorScheme.outline,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -199,7 +203,9 @@ class _Benefit extends StatelessWidget {
         children: [
           Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 16),
-          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyLarge)),
+          Expanded(
+            child: Text(text, style: Theme.of(context).textTheme.bodyLarge),
+          ),
         ],
       ),
     );

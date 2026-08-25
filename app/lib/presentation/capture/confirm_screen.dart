@@ -195,10 +195,9 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
       // disposable, and so is an abandoned capture.
       String? storedPath;
       if (draft.imagePath != null) {
-        storedPath = await ref.read(attachmentStoreProvider).persist(
-              sourcePath: draft.imagePath!,
-              memoryId: id,
-            );
+        storedPath = await ref
+            .read(attachmentStoreProvider)
+            .persist(sourcePath: draft.imagePath!, memoryId: id);
       }
 
       final memory = MemoryObject(
@@ -238,14 +237,16 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
         // Back to Home, clearing the whole capture flow off the stack.
         Navigator.of(context).popUntil((route) => route.isFirst);
         if (reminderNotice != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(reminderNotice)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(reminderNotice)));
         }
       }
     } on AppError catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.userMessage)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.userMessage)));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -381,8 +382,11 @@ class _DateSuggestions extends StatelessWidget {
     if (candidates.isEmpty) {
       return Row(
         children: [
-          Icon(Icons.info_outline,
-              size: 18, color: Theme.of(context).colorScheme.outline),
+          Icon(
+            Icons.info_outline,
+            size: 18,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

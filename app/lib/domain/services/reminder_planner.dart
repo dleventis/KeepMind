@@ -85,11 +85,13 @@ class ReminderPlanner {
       // the UI tells the user which offsets actually applied.
       if (!trigger.isAfter(now)) continue;
 
-      planned.add(PlannedReminder(
-        triggerTime: trigger,
-        daysBefore: days,
-        timezoneName: location.name,
-      ));
+      planned.add(
+        PlannedReminder(
+          triggerTime: trigger,
+          daysBefore: days,
+          timezoneName: location.name,
+        ),
+      );
     }
 
     planned.sort((a, b) => a.triggerTime.compareTo(b.triggerTime));

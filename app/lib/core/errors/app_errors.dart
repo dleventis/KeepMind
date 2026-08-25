@@ -19,74 +19,74 @@ sealed class AppError implements Exception {
 
 class NetworkError extends AppError {
   const NetworkError({String? debugMessage})
-      : super(
-          userMessage:
-              "Couldn't connect. Check your internet connection and try again.",
-          debugMessage: debugMessage ?? 'Network request failed',
-        );
+    : super(
+        userMessage:
+            "Couldn't connect. Check your internet connection and try again.",
+        debugMessage: debugMessage ?? 'Network request failed',
+      );
 }
 
 class ProviderAuthenticationError extends AppError {
   const ProviderAuthenticationError({required String providerId})
-      : super(
-          userMessage:
-              'Your AI provider rejected the connection. Check your API key in Settings.',
-          debugMessage: 'Authentication failed for provider: $providerId',
-        );
+    : super(
+        userMessage:
+            'Your AI provider rejected the connection. Check your API key in Settings.',
+        debugMessage: 'Authentication failed for provider: $providerId',
+      );
 }
 
 class ProviderQuotaError extends AppError {
   const ProviderQuotaError({required String providerId})
-      : super(
-          userMessage:
-              'Your AI provider has temporarily reached its usage limit. Try again later.',
-          debugMessage: 'Quota/rate-limit hit for provider: $providerId',
-        );
+    : super(
+        userMessage:
+            'Your AI provider has temporarily reached its usage limit. Try again later.',
+        debugMessage: 'Quota/rate-limit hit for provider: $providerId',
+      );
 }
 
 class OCRFailure extends AppError {
   const OCRFailure({String? debugMessage})
-      : super(
-          userMessage:
-              "Couldn't read that image clearly. Try retaking the photo with better lighting.",
-          debugMessage: debugMessage ?? 'OCR pipeline failed',
-        );
+    : super(
+        userMessage:
+            "Couldn't read that image clearly. Try retaking the photo with better lighting.",
+        debugMessage: debugMessage ?? 'OCR pipeline failed',
+      );
 }
 
 class InvalidAIResponse extends AppError {
   const InvalidAIResponse({required String providerId, String? reason})
-      : super(
-          userMessage:
-              "The AI provider's response didn't look right, so nothing was saved automatically. You can enter the details manually.",
-          debugMessage:
-              'Invalid/unparseable structured response from $providerId'
-              '${reason != null ? ': $reason' : ''}',
-        );
+    : super(
+        userMessage:
+            "The AI provider's response didn't look right, so nothing was saved automatically. You can enter the details manually.",
+        debugMessage:
+            'Invalid/unparseable structured response from $providerId'
+            '${reason != null ? ': $reason' : ''}',
+      );
 }
 
 class StorageError extends AppError {
   const StorageError({String? debugMessage})
-      : super(
-          userMessage: "Couldn't save that. Please try again.",
-          debugMessage: debugMessage ?? 'Local storage operation failed',
-        );
+    : super(
+        userMessage: "Couldn't save that. Please try again.",
+        debugMessage: debugMessage ?? 'Local storage operation failed',
+      );
 }
 
 class PermissionError extends AppError {
   const PermissionError({required String permission})
-      : super(
-          userMessage:
-              'KeepMind needs permission to do that. You can grant it in Settings.',
-          debugMessage: 'Permission denied: $permission',
-        );
+    : super(
+        userMessage:
+            'KeepMind needs permission to do that. You can grant it in Settings.',
+        debugMessage: 'Permission denied: $permission',
+      );
 }
 
 class NotificationPermissionError extends AppError {
   const NotificationPermissionError()
-      : super(
-          userMessage:
-              "KeepMind can't remind you without notification permission. "
-              'You can enable it in Settings.',
-          debugMessage: 'Notification permission denied',
-        );
+    : super(
+        userMessage:
+            "KeepMind can't remind you without notification permission. "
+            'You can enable it in Settings.',
+        debugMessage: 'Notification permission denied',
+      );
 }

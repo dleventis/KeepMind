@@ -57,10 +57,7 @@ class FreeTierLimits {
 
   /// Whether to start warning that the free tier is nearly full. Shown
   /// as a quiet note, not a nag — see the UI that consumes it.
-  static bool shouldWarn({
-    required int currentCount,
-    required bool isPremium,
-  }) {
+  static bool shouldWarn({required int currentCount, required bool isPremium}) {
     if (isPremium) return false;
     return currentCount >= maxActiveMemories - 2;
   }

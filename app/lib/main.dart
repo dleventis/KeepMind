@@ -32,10 +32,7 @@ Future<void> main() async {
   unawaited(_reconcileReminders(container));
 
   runApp(
-    UncontrolledProviderScope(
-      container: container,
-      child: const KeepMindApp(),
-    ),
+    UncontrolledProviderScope(container: container, child: const KeepMindApp()),
   );
 }
 
@@ -45,11 +42,13 @@ Future<void> _reconcileReminders(ProviderContainer container) async {
     // keep their real title. Without them every reminder the OS dropped
     // would come back as a useless "KeepMind reminder" — precisely the
     // path reconciliation exists to rescue.
-    final memories =
-        await container.read(memoryRepositoryProvider).watchAll().first;
-    await container.read(reminderSchedulerProvider).reconcile(
-          memoriesById: {for (final m in memories) m.id: m},
-        );
+    final memories = await container
+        .read(memoryRepositoryProvider)
+        .watchAll()
+        .first;
+    await container
+        .read(reminderSchedulerProvider)
+        .reconcile(memoriesById: {for (final m in memories) m.id: m});
   } catch (_) {
     // Reconciliation is best-effort. Failing it must never prevent the
     // app from opening — the user's memories are still readable, and the

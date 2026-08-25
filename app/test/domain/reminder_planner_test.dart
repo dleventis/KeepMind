@@ -187,8 +187,7 @@ void main() {
       );
     });
 
-    test('ignores negative offsets rather than scheduling after the event',
-        () {
+    test('ignores negative offsets rather than scheduling after the event', () {
       expect(
         ReminderPlanner.plan(
           eventDate: DateTime(2026, 11, 17),

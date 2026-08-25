@@ -49,8 +49,7 @@ void main() {
   }
 
   group('scheduleFor', () {
-    test('persists and registers one reminder per applicable offset',
-        () async {
+    test('persists and registers one reminder per applicable offset', () async {
       final result = await scheduler.scheduleFor(
         memory(eventDate: DateTime(2026, 11, 17)),
         location: athens,
@@ -106,10 +105,13 @@ void main() {
       expect(notifications.scheduled, isEmpty);
     });
 
-    test('replaces existing reminders instead of duplicating them',
-        () async {
+    test('replaces existing reminders instead of duplicating them', () async {
       final first = memory(eventDate: DateTime(2026, 11, 17));
-      await scheduler.scheduleFor(first, location: athens, now: at(2026, 8, 19));
+      await scheduler.scheduleFor(
+        first,
+        location: athens,
+        now: at(2026, 8, 19),
+      );
 
       // The user corrects the date; the old reminders must not survive.
       final corrected = first.copyWith(eventDate: DateTime(2026, 12, 25));
@@ -174,8 +176,7 @@ void main() {
       expect(report.totalPending, 3);
     });
 
-    test('retires reminders whose moment has passed as elapsed',
-        () async {
+    test('retires reminders whose moment has passed as elapsed', () async {
       await scheduler.scheduleFor(
         memory(eventDate: DateTime(2026, 11, 17)),
         location: athens,
@@ -187,8 +188,7 @@ void main() {
       final report = await scheduler.reconcile(now: at(2026, 12, 1));
 
       expect(report.markedElapsed, 3);
-      final statuses =
-          repository.reminders.values.map((r) => r.status).toSet();
+      final statuses = repository.reminders.values.map((r) => r.status).toSet();
       expect(statuses, {ReminderStatus.elapsed});
       // Nothing pointless re-registered into the past.
       expect(report.reRegistered, 0);

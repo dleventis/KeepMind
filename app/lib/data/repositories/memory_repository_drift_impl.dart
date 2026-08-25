@@ -15,7 +15,7 @@ import '../local/database/app_database.dart';
 /// and nowhere else, so `domain/` stays free of persistence concerns.
 class DriftMemoryRepository implements MemoryRepository {
   DriftMemoryRepository(this._db, {AttachmentStore? attachments})
-      : _attachments = attachments ?? const AttachmentStore();
+    : _attachments = attachments ?? const AttachmentStore();
 
   final AppDatabase _db;
 
@@ -32,36 +32,38 @@ class DriftMemoryRepository implements MemoryRepository {
       ..where((t) => t.archived.equals(false))
       ..orderBy([
         (t) => OrderingTerm(
-              // Memories with a soonest-first event date surface first;
-              // memories with no event date (physical-location notes,
-              // etc.) sort after, newest-created first.
-              expression: t.eventDate,
-              mode: OrderingMode.asc,
-              nulls: NullsOrder.last,
-            ),
+          // Memories with a soonest-first event date surface first;
+          // memories with no event date (physical-location notes,
+          // etc.) sort after, newest-created first.
+          expression: t.eventDate,
+          mode: OrderingMode.asc,
+          nulls: NullsOrder.last,
+        ),
         (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
       ]);
     return query.watch().map(
-          (rows) => rows.map(_rowToEntity).toList(growable: false),
-        );
+      (rows) => rows.map(_rowToEntity).toList(growable: false),
+    );
   }
 
   @override
   Future<MemoryObject?> getById(String id) async {
-    final row = await (_db.select(_db.memoryObjects)
-          ..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.memoryObjects,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     return row == null ? null : _rowToEntity(row);
   }
 
   @override
   Future<void> save(MemoryObject memory) async {
     try {
-      await _db.into(_db.memoryObjects).insertOnConflictUpdate(
-            _entityToCompanion(memory),
-          );
+      await _db
+          .into(_db.memoryObjects)
+          .insertOnConflictUpdate(_entityToCompanion(memory));
     } catch (e) {
-      throw StorageError(debugMessage: 'Failed to save memory ${memory.id}: $e');
+      throw StorageError(
+        debugMessage: 'Failed to save memory ${memory.id}: $e',
+      );
     }
   }
 
@@ -96,8 +98,8 @@ class DriftMemoryRepository implements MemoryRepository {
       confidenceScore: row.confidenceScore,
       confirmationStatus: ConfirmationStatus.values[row.confirmationStatus],
       sensitivity: Sensitivity.values[row.sensitivity],
-      structuredData:
-          (jsonDecode(row.structuredData) as Map).cast<String, Object?>(),
+      structuredData: (jsonDecode(row.structuredData) as Map)
+          .cast<String, Object?>(),
       archived: row.archived,
       sourceUri: row.sourceUri,
       rawText: row.rawText,

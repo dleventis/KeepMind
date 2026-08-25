@@ -38,20 +38,22 @@ void main() {
     );
   }
 
-  test('save then getById round-trips all fields, including structuredData',
-      () async {
-    final repo = DriftMemoryRepository(db);
-    final memory = sample(eventDate: DateTime(2026, 11, 17));
+  test(
+    'save then getById round-trips all fields, including structuredData',
+    () async {
+      final repo = DriftMemoryRepository(db);
+      final memory = sample(eventDate: DateTime(2026, 11, 17));
 
-    await repo.save(memory);
-    final loaded = await repo.getById(memory.id);
+      await repo.save(memory);
+      final loaded = await repo.getById(memory.id);
 
-    expect(loaded, isNotNull);
-    expect(loaded!.title, 'Car insurance');
-    expect(loaded.eventDate, DateTime(2026, 11, 17));
-    expect(loaded.structuredData['provider'], 'Example Insurance');
-    expect(loaded.confirmationStatus, ConfirmationStatus.confirmed);
-  });
+      expect(loaded, isNotNull);
+      expect(loaded!.title, 'Car insurance');
+      expect(loaded.eventDate, DateTime(2026, 11, 17));
+      expect(loaded.structuredData['provider'], 'Example Insurance');
+      expect(loaded.confirmationStatus, ConfirmationStatus.confirmed);
+    },
+  );
 
   test('getById returns null for an unknown id', () async {
     final repo = DriftMemoryRepository(db);

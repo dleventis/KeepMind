@@ -8,7 +8,7 @@ import 'package:keepmind/domain/entitlements/entitlements.dart';
 /// is specifically about premium behaviour.
 class FakeEntitlementService implements EntitlementService {
   FakeEntitlementService({Entitlements initial = Entitlements.free})
-      : _current = initial;
+    : _current = initial;
 
   Entitlements _current;
   final _controller = StreamController<Entitlements>.broadcast();

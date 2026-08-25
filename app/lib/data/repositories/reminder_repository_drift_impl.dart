@@ -12,19 +12,21 @@ class DriftReminderRepository implements ReminderRepository {
 
   @override
   Future<List<Reminder>> pendingReminders() async {
-    final rows = await (_db.select(_db.reminders)
-          ..where((t) => t.status.equals(ReminderStatus.scheduled.index))
-          ..orderBy([(t) => OrderingTerm(expression: t.triggerTime)]))
-        .get();
+    final rows =
+        await (_db.select(_db.reminders)
+              ..where((t) => t.status.equals(ReminderStatus.scheduled.index))
+              ..orderBy([(t) => OrderingTerm(expression: t.triggerTime)]))
+            .get();
     return rows.map(_toEntity).toList(growable: false);
   }
 
   @override
   Future<List<Reminder>> remindersFor(String memoryId) async {
-    final rows = await (_db.select(_db.reminders)
-          ..where((t) => t.memoryId.equals(memoryId))
-          ..orderBy([(t) => OrderingTerm(expression: t.triggerTime)]))
-        .get();
+    final rows =
+        await (_db.select(_db.reminders)
+              ..where((t) => t.memoryId.equals(memoryId))
+              ..orderBy([(t) => OrderingTerm(expression: t.triggerTime)]))
+            .get();
     return rows.map(_toEntity).toList(growable: false);
   }
 
@@ -47,8 +49,9 @@ class DriftReminderRepository implements ReminderRepository {
   Future<void> updateStatus(String reminderId, ReminderStatus status) async {
     final now = DateTime.now();
     try {
-      await (_db.update(_db.reminders)..where((t) => t.id.equals(reminderId)))
-          .write(
+      await (_db.update(
+        _db.reminders,
+      )..where((t) => t.id.equals(reminderId))).write(
         RemindersCompanion(
           status: Value(status.index),
           // Written by the same transition that sets the status, so
@@ -68,9 +71,9 @@ class DriftReminderRepository implements ReminderRepository {
   @override
   Future<void> deleteForMemory(String memoryId) async {
     try {
-      await (_db.delete(_db.reminders)
-            ..where((t) => t.memoryId.equals(memoryId)))
-          .go();
+      await (_db.delete(
+        _db.reminders,
+      )..where((t) => t.memoryId.equals(memoryId))).go();
     } catch (e) {
       throw StorageError(
         debugMessage: 'Failed to delete reminders for $memoryId: $e',
@@ -79,26 +82,26 @@ class DriftReminderRepository implements ReminderRepository {
   }
 
   Reminder _toEntity(ReminderRow row) => Reminder(
-        id: row.id,
-        memoryId: row.memoryId,
-        triggerTime: row.triggerTime,
-        timezone: row.timezone,
-        status: ReminderStatus.values[row.status],
-        createdAt: row.createdAt,
-        daysBefore: row.daysBefore,
-        notificationId: row.notificationId,
-        acknowledgedAt: row.acknowledgedAt,
-      );
+    id: row.id,
+    memoryId: row.memoryId,
+    triggerTime: row.triggerTime,
+    timezone: row.timezone,
+    status: ReminderStatus.values[row.status],
+    createdAt: row.createdAt,
+    daysBefore: row.daysBefore,
+    notificationId: row.notificationId,
+    acknowledgedAt: row.acknowledgedAt,
+  );
 
   RemindersCompanion _toCompanion(Reminder r) => RemindersCompanion.insert(
-        id: r.id,
-        memoryId: r.memoryId,
-        triggerTime: r.triggerTime,
-        timezone: r.timezone,
-        status: r.status.index,
-        createdAt: r.createdAt,
-        daysBefore: r.daysBefore,
-        notificationId: r.notificationId,
-        acknowledgedAt: Value(r.acknowledgedAt),
-      );
+    id: r.id,
+    memoryId: r.memoryId,
+    triggerTime: r.triggerTime,
+    timezone: r.timezone,
+    status: r.status.index,
+    createdAt: r.createdAt,
+    daysBefore: r.daysBefore,
+    notificationId: r.notificationId,
+    acknowledgedAt: Value(r.acknowledgedAt),
+  );
 }

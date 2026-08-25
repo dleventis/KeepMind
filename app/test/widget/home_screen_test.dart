@@ -33,8 +33,9 @@ Widget _appUnder(
       ocrServiceProvider.overrideWithValue(ocr ?? FakeOcrService()),
       // Without this the real RevenueCat service would be constructed and
       // reach for platform channels that do not exist in a widget test.
-      entitlementServiceProvider
-          .overrideWithValue(entitlements ?? FakeEntitlementService()),
+      entitlementServiceProvider.overrideWithValue(
+        entitlements ?? FakeEntitlementService(),
+      ),
     ],
     child: MaterialApp(home: home),
   );
@@ -44,23 +45,26 @@ Future<InMemoryMemoryRepository> _repositoryWith(int count) async {
   final repository = InMemoryMemoryRepository();
   final now = DateTime(2026, 8, 25);
   for (var i = 0; i < count; i++) {
-    await repository.save(MemoryObject(
-      id: 'mem-$i',
-      title: 'Memory $i',
-      category: 'Document',
-      sourceType: 'text',
-      createdAt: now,
-      updatedAt: now,
-      confirmationStatus: ConfirmationStatus.confirmed,
-    ));
+    await repository.save(
+      MemoryObject(
+        id: 'mem-$i',
+        title: 'Memory $i',
+        category: 'Document',
+        sourceType: 'text',
+        createdAt: now,
+        updatedAt: now,
+        confirmationStatus: ConfirmationStatus.confirmed,
+      ),
+    );
   }
   return repository;
 }
 
 void main() {
   group('free tier limit', () {
-    testWidgets('lets a free user under the limit capture normally',
-        (tester) async {
+    testWidgets('lets a free user under the limit capture normally', (
+      tester,
+    ) async {
       final repository = await _repositoryWith(3);
       await tester.pumpWidget(
         _appUnder(const HomeScreen(), repository: repository),
@@ -74,10 +78,12 @@ void main() {
       expect(find.text('KeepMind Premium'), findsNothing);
     });
 
-    testWidgets('shows the paywall instead of capture once the limit is hit',
-        (tester) async {
-      final repository =
-          await _repositoryWith(FreeTierLimits.maxActiveMemories);
+    testWidgets('shows the paywall instead of capture once the limit is hit', (
+      tester,
+    ) async {
+      final repository = await _repositoryWith(
+        FreeTierLimits.maxActiveMemories,
+      );
       await tester.pumpWidget(
         _appUnder(const HomeScreen(), repository: repository),
       );
@@ -93,14 +99,14 @@ void main() {
     });
 
     testWidgets('a premium user is never gated', (tester) async {
-      final repository =
-          await _repositoryWith(FreeTierLimits.maxActiveMemories + 5);
+      final repository = await _repositoryWith(
+        FreeTierLimits.maxActiveMemories + 5,
+      );
       await tester.pumpWidget(
         _appUnder(
           const HomeScreen(),
           repository: repository,
-          entitlements:
-              FakeEntitlementService(initial: Entitlements.premium),
+          entitlements: FakeEntitlementService(initial: Entitlements.premium),
         ),
       );
       await tester.pumpAndSettle();
@@ -111,19 +117,24 @@ void main() {
       expect(find.text('Take a photo'), findsOneWidget);
     });
 
-    testWidgets('an over-limit free user can still read what they saved',
-        (tester) async {
+    testWidgets('an over-limit free user can still read what they saved', (
+      tester,
+    ) async {
       // The case that matters most ethically: a lapsed subscriber must
       // never lose access to their own passport expiry.
-      final repository =
-          await _repositoryWith(FreeTierLimits.maxActiveMemories + 4);
+      final repository = await _repositoryWith(
+        FreeTierLimits.maxActiveMemories + 4,
+      );
       await tester.pumpWidget(
         _appUnder(const HomeScreen(), repository: repository),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('Memory 0'), findsOneWidget);
-      expect(find.textContaining('used all your free memories'), findsOneWidget);
+      expect(
+        find.textContaining('used all your free memories'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('warns only in the last two slots', (tester) async {
@@ -137,8 +148,9 @@ void main() {
   });
 
   group('HomeScreen', () {
-    testWidgets('shows the empty state when there are no memories',
-        (tester) async {
+    testWidgets('shows the empty state when there are no memories', (
+      tester,
+    ) async {
       await tester.pumpWidget(_appUnder(const HomeScreen()));
       await tester.pumpAndSettle();
 
@@ -162,8 +174,9 @@ void main() {
   });
 
   group('ConfirmScreen', () {
-    testWidgets('saving a typed memory persists it and returns Home',
-        (tester) async {
+    testWidgets('saving a typed memory persists it and returns Home', (
+      tester,
+    ) async {
       final repository = InMemoryMemoryRepository();
       await tester.pumpWidget(
         _appUnder(const HomeScreen(), repository: repository),
@@ -203,8 +216,9 @@ void main() {
       expect(await repository.watchAll().first, isEmpty);
     });
 
-    testWidgets('shows raw OCR text collapsed, and expands it on tap',
-        (tester) async {
+    testWidgets('shows raw OCR text collapsed, and expands it on tap', (
+      tester,
+    ) async {
       const draft = CaptureDraft(rawText: 'Valid until 2026-11-17');
       await tester.pumpWidget(_appUnder(const ConfirmScreen(draft: draft)));
       await tester.pumpAndSettle();
@@ -218,8 +232,9 @@ void main() {
       expect(find.text('Valid until 2026-11-17'), findsOneWidget);
     });
 
-    testWidgets('offers each found date as a tappable suggestion',
-        (tester) async {
+    testWidgets('offers each found date as a tappable suggestion', (
+      tester,
+    ) async {
       final draft = CaptureDraft(
         rawText: 'Renewal 03/04/2026',
         dateCandidates: DateCandidateFinder.find('Renewal 03/04/2026'),

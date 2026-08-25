@@ -58,7 +58,9 @@ class FakeReminderRepository implements ReminderRepository {
 
   @override
   Future<List<Reminder>> pendingReminders() async =>
-      reminders.values.where((r) => r.status == ReminderStatus.scheduled).toList()
+      reminders.values
+          .where((r) => r.status == ReminderStatus.scheduled)
+          .toList()
         ..sort((a, b) => a.triggerTime.compareTo(b.triggerTime));
 
   @override

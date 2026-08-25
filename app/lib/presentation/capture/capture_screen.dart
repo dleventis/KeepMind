@@ -78,8 +78,8 @@ class CaptureScreen extends StatelessWidget {
       if (!context.mounted) return;
       // image_picker surfaces a denied camera/photos permission as a
       // PlatformException rather than a typed error.
-      final error = e.code == 'camera_access_denied' ||
-              e.code == 'photo_access_denied'
+      final error =
+          e.code == 'camera_access_denied' || e.code == 'photo_access_denied'
           ? const PermissionError(permission: 'camera or photo library')
           : const StorageError(debugMessage: 'image_picker failed');
       _showError(context, error);
@@ -87,15 +87,15 @@ class CaptureScreen extends StatelessWidget {
   }
 
   Future<void> _openConfirm(BuildContext context, CaptureDraft draft) {
-    return Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ConfirmScreen(draft: draft)),
-    );
+    return Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => ConfirmScreen(draft: draft)));
   }
 
   void _showError(BuildContext context, AppError error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(error.userMessage)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(error.userMessage)));
   }
 }
 
@@ -122,7 +122,11 @@ class _CaptureOption extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Row(
             children: [
-              Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                icon,
+                size: 32,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(width: 20),
               Expanded(
                 child: Column(

@@ -19,8 +19,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final memoriesAsync = ref.watch(memoriesStreamProvider);
-    final isPremium =
-        ref.watch(entitlementsProvider).value?.isPremium ?? false;
+    final isPremium = ref.watch(entitlementsProvider).value?.isPremium ?? false;
     final count = ref.watch(activeMemoryCountProvider);
 
     return Scaffold(
@@ -41,7 +40,8 @@ class HomeScreen extends ConsumerWidget {
               isPremium: isPremium,
             ))
               _FreeTierNotice(
-                remaining: FreeTierLimits.remainingSlots(
+                remaining:
+                    FreeTierLimits.remainingSlots(
                       currentCount: count,
                       isPremium: isPremium,
                     ) ??
@@ -74,15 +74,15 @@ class HomeScreen extends ConsumerWidget {
       if (purchased != true) return;
     }
     if (!context.mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CaptureScreen()),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const CaptureScreen()));
   }
 
   Future<bool?> _openPaywall(BuildContext context) {
-    return Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => const PaywallScreen()),
-    );
+    return Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => const PaywallScreen()));
   }
 }
 
@@ -107,8 +107,8 @@ class _FreeTierNotice extends StatelessWidget {
               remaining == 0
                   ? "You've used all your free memories."
                   : remaining == 1
-                      ? '1 free memory left.'
-                      : '$remaining free memories left.',
+                  ? '1 free memory left.'
+                  : '$remaining free memories left.',
               style: theme.textTheme.bodySmall,
             ),
           ),

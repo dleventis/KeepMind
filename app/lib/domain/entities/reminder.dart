@@ -62,10 +62,7 @@ class Reminder {
   final DateTime createdAt;
   final DateTime? acknowledgedAt;
 
-  Reminder copyWith({
-    ReminderStatus? status,
-    DateTime? acknowledgedAt,
-  }) {
+  Reminder copyWith({ReminderStatus? status, DateTime? acknowledgedAt}) {
     return Reminder(
       id: id,
       memoryId: memoryId,

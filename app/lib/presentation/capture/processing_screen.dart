@@ -97,12 +97,14 @@ class _ProcessingScreenState extends ConsumerState<ProcessingScreen> {
                       });
                       _run();
                     },
-                    onEnterManually: () => Navigator.of(context)
-                        .pushReplacement(MaterialPageRoute(
-                      builder: (_) => ConfirmScreen(
-                        draft: CaptureDraft(imagePath: widget.imagePath),
-                      ),
-                    )),
+                    onEnterManually: () =>
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (_) => ConfirmScreen(
+                              draft: CaptureDraft(imagePath: widget.imagePath),
+                            ),
+                          ),
+                        ),
                   )
                 : Column(
                     mainAxisSize: MainAxisSize.min,
@@ -147,8 +149,11 @@ class _ErrorView extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.error_outline,
-            size: 48, color: Theme.of(context).colorScheme.error),
+        Icon(
+          Icons.error_outline,
+          size: 48,
+          color: Theme.of(context).colorScheme.error,
+        ),
         const SizedBox(height: 16),
         Text(
           error.userMessage,

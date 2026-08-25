@@ -23,8 +23,8 @@ class RevenueCatEntitlementService implements EntitlementService {
     String? iosApiKey,
     String? androidApiKey,
     this.entitlementId = 'premium',
-  })  : _iosApiKey = iosApiKey ?? _iosKeyFromEnvironment,
-        _androidApiKey = androidApiKey ?? _androidKeyFromEnvironment;
+  }) : _iosApiKey = iosApiKey ?? _iosKeyFromEnvironment,
+       _androidApiKey = androidApiKey ?? _androidKeyFromEnvironment;
 
   /// The entitlement identifier configured in the RevenueCat dashboard.
   final String entitlementId;
@@ -39,10 +39,12 @@ class RevenueCatEntitlementService implements EntitlementService {
   /// class of secret as a provider API key. It is kept out of the repo
   /// anyway — brief §45, "never commit secrets", is a habit worth keeping
   /// unconditionally rather than one to reason about case by case.
-  static const String _iosKeyFromEnvironment =
-      String.fromEnvironment('REVENUECAT_IOS_KEY');
-  static const String _androidKeyFromEnvironment =
-      String.fromEnvironment('REVENUECAT_ANDROID_KEY');
+  static const String _iosKeyFromEnvironment = String.fromEnvironment(
+    'REVENUECAT_IOS_KEY',
+  );
+  static const String _androidKeyFromEnvironment = String.fromEnvironment(
+    'REVENUECAT_ANDROID_KEY',
+  );
 
   final _controller = StreamController<Entitlements>.broadcast();
   Future<void>? _initialization;
@@ -132,9 +134,12 @@ class RevenueCatEntitlementService implements EntitlementService {
       if (match.isEmpty) return PurchaseOutcome.failed;
 
       // `purchasePackage` is deprecated in favour of the unified
-      // `purchase(PurchaseParams)` entry point.
+      // `purchase(PurchaseParams)` entry point. PurchaseParams has no
+      // unnamed constructor — only one named constructor per purchase
+      // type (`.package`, `.storeProduct`, `.subscriptionOption`) — and
+      // the package argument is positional, not named.
       final result = await Purchases.purchase(
-        PurchaseParams(package: match.first),
+        PurchaseParams.package(match.first),
       );
       _emit(_fromCustomerInfo(result.customerInfo));
       return PurchaseOutcome.purchased;

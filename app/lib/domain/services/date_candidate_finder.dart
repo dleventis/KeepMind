@@ -54,27 +54,41 @@ class DateCandidateFinder {
   DateCandidateFinder._();
 
   static const Map<String, int> _monthNames = {
-    'jan': 1, 'january': 1,
-    'feb': 2, 'february': 2,
-    'mar': 3, 'march': 3,
-    'apr': 4, 'april': 4,
+    'jan': 1,
+    'january': 1,
+    'feb': 2,
+    'february': 2,
+    'mar': 3,
+    'march': 3,
+    'apr': 4,
+    'april': 4,
     'may': 5,
-    'jun': 6, 'june': 6,
-    'jul': 7, 'july': 7,
-    'aug': 8, 'august': 8,
-    'sep': 9, 'sept': 9, 'september': 9,
-    'oct': 10, 'october': 10,
-    'nov': 11, 'november': 11,
-    'dec': 12, 'december': 12,
+    'jun': 6,
+    'june': 6,
+    'jul': 7,
+    'july': 7,
+    'aug': 8,
+    'august': 8,
+    'sep': 9,
+    'sept': 9,
+    'september': 9,
+    'oct': 10,
+    'october': 10,
+    'nov': 11,
+    'november': 11,
+    'dec': 12,
+    'december': 12,
   };
 
   // 2026-11-17 or 2026/11/17 — ISO-ish, year first, never ambiguous.
-  static final RegExp _isoPattern =
-      RegExp(r'\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b');
+  static final RegExp _isoPattern = RegExp(
+    r'\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b',
+  );
 
   // 17/11/2026, 17.11.26, 11-17-2026 — ambiguous unless one part > 12.
-  static final RegExp _numericPattern =
-      RegExp(r'\b(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})\b');
+  static final RegExp _numericPattern = RegExp(
+    r'\b(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})\b',
+  );
 
   // 17 November 2026 / 17th Nov, 2026
   static final RegExp _dayMonthYearPattern = RegExp(
@@ -103,12 +117,14 @@ class DateCandidateFinder {
         day: int.parse(m.group(3)!),
       );
       if (date != null) {
-        found.add(DateCandidate(
-          date: date,
-          matchedText: m.group(0)!,
-          interpretation: 'year-month-day',
-          ambiguous: false,
-        ));
+        found.add(
+          DateCandidate(
+            date: date,
+            matchedText: m.group(0)!,
+            interpretation: 'year-month-day',
+            ambiguous: false,
+          ),
+        );
       }
     }
 
@@ -125,42 +141,52 @@ class DateCandidateFinder {
         if (asDayMonth == asMonthDay) {
           // e.g. 05/05/2026 — both readings agree, so it isn't ambiguous
           // in any way the user would care about.
-          found.add(DateCandidate(
+          found.add(
+            DateCandidate(
+              date: asDayMonth,
+              matchedText: matched,
+              interpretation: 'day/month/year',
+              ambiguous: false,
+            ),
+          );
+        } else {
+          // Genuinely ambiguous: offer both, let the user choose.
+          found.add(
+            DateCandidate(
+              date: asDayMonth,
+              matchedText: matched,
+              interpretation: 'day/month/year',
+              ambiguous: true,
+            ),
+          );
+          found.add(
+            DateCandidate(
+              date: asMonthDay,
+              matchedText: matched,
+              interpretation: 'month/day/year',
+              ambiguous: true,
+            ),
+          );
+        }
+      } else if (asDayMonth != null) {
+        // Only one reading is a real date (e.g. 17/11 — 17 is not a month).
+        found.add(
+          DateCandidate(
             date: asDayMonth,
             matchedText: matched,
             interpretation: 'day/month/year',
             ambiguous: false,
-          ));
-        } else {
-          // Genuinely ambiguous: offer both, let the user choose.
-          found.add(DateCandidate(
-            date: asDayMonth,
-            matchedText: matched,
-            interpretation: 'day/month/year',
-            ambiguous: true,
-          ));
-          found.add(DateCandidate(
+          ),
+        );
+      } else if (asMonthDay != null) {
+        found.add(
+          DateCandidate(
             date: asMonthDay,
             matchedText: matched,
             interpretation: 'month/day/year',
-            ambiguous: true,
-          ));
-        }
-      } else if (asDayMonth != null) {
-        // Only one reading is a real date (e.g. 17/11 — 17 is not a month).
-        found.add(DateCandidate(
-          date: asDayMonth,
-          matchedText: matched,
-          interpretation: 'day/month/year',
-          ambiguous: false,
-        ));
-      } else if (asMonthDay != null) {
-        found.add(DateCandidate(
-          date: asMonthDay,
-          matchedText: matched,
-          interpretation: 'month/day/year',
-          ambiguous: false,
-        ));
+            ambiguous: false,
+          ),
+        );
       }
     }
 
@@ -173,12 +199,14 @@ class DateCandidateFinder {
         day: int.parse(m.group(1)!),
       );
       if (date != null) {
-        found.add(DateCandidate(
-          date: date,
-          matchedText: m.group(0)!,
-          interpretation: 'day month year',
-          ambiguous: false,
-        ));
+        found.add(
+          DateCandidate(
+            date: date,
+            matchedText: m.group(0)!,
+            interpretation: 'day month year',
+            ambiguous: false,
+          ),
+        );
       }
     }
 
@@ -191,12 +219,14 @@ class DateCandidateFinder {
         day: int.parse(m.group(2)!),
       );
       if (date != null) {
-        found.add(DateCandidate(
-          date: date,
-          matchedText: m.group(0)!,
-          interpretation: 'month day year',
-          ambiguous: false,
-        ));
+        found.add(
+          DateCandidate(
+            date: date,
+            matchedText: m.group(0)!,
+            interpretation: 'month day year',
+            ambiguous: false,
+          ),
+        );
       }
     }
 

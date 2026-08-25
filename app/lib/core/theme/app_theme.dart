@@ -7,14 +7,14 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData get light => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorSchemeSeed: const Color(0xFF3D5A80),
-      );
+    useMaterial3: true,
+    brightness: Brightness.light,
+    colorSchemeSeed: const Color(0xFF3D5A80),
+  );
 
   static ThemeData get dark => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorSchemeSeed: const Color(0xFF3D5A80),
-      );
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorSchemeSeed: const Color(0xFF3D5A80),
+  );
 }

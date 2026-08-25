@@ -47,18 +47,17 @@ void main() {
   });
 
   group('ambiguity', () {
-    test('offers both readings when a numeric date is genuinely ambiguous',
-        () {
+    test('offers both readings when a numeric date is genuinely ambiguous', () {
       // 03/04/2026 is 3 April (most of the world) or 4 March (US). The
       // brief forbids silently assuming MM/DD/YYYY (§37), so both are
       // surfaced for the user to choose between.
       final found = DateCandidateFinder.find('Renewal 03/04/2026');
       expect(found, hasLength(2));
       expect(found.every((c) => c.ambiguous), isTrue);
-      expect(
-        found.map((c) => c.date).toSet(),
-        {DateTime(2026, 4, 3), DateTime(2026, 3, 4)},
-      );
+      expect(found.map((c) => c.date).toSet(), {
+        DateTime(2026, 4, 3),
+        DateTime(2026, 3, 4),
+      });
     });
 
     test('is not ambiguous when both readings agree', () {

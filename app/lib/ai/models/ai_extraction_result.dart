@@ -60,10 +60,7 @@ class ExtractedDate {
 }
 
 class ExtractedAmount {
-  const ExtractedAmount({
-    required this.value,
-    required this.currency,
-  });
+  const ExtractedAmount({required this.value, required this.currency});
 
   final double value;
   final String currency; // ISO 4217, e.g. "EUR"

@@ -54,7 +54,9 @@ class LocalNotificationService implements NotificationService {
       // working rather than fatal.
     }
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const darwinSettings = DarwinInitializationSettings(
       // Permission is requested explicitly at first reminder creation
       // instead, so the prompt arrives with context (brief §25).
@@ -90,7 +92,8 @@ class LocalNotificationService implements NotificationService {
     if (Platform.isIOS) {
       final granted = await _plugin
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       return granted ?? false;
     }
@@ -98,14 +101,17 @@ class LocalNotificationService implements NotificationService {
     if (Platform.isMacOS) {
       final granted = await _plugin
           .resolvePlatformSpecificImplementation<
-              MacOSFlutterLocalNotificationsPlugin>()
+            MacOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
       return granted ?? false;
     }
 
     if (Platform.isAndroid) {
-      final android = _plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+      final android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       final notifications = await android?.requestNotificationsPermission();
       // Android 12+ additionally gates *exact* alarms. Without it the
       // schedule still works but may be delayed by the OS — acceptable
@@ -123,14 +129,16 @@ class LocalNotificationService implements NotificationService {
     if (Platform.isAndroid) {
       final enabled = await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.areNotificationsEnabled();
       return enabled ?? false;
     }
     if (Platform.isIOS) {
       final options = await _plugin
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.checkPermissions();
       return options?.isEnabled ?? false;
     }
@@ -138,7 +146,8 @@ class LocalNotificationService implements NotificationService {
     if (Platform.isMacOS) {
       final options = await _plugin
           .resolvePlatformSpecificImplementation<
-              MacOSFlutterLocalNotificationsPlugin>()
+            MacOSFlutterLocalNotificationsPlugin
+          >()
           ?.checkPermissions();
       return options?.isEnabled ?? false;
     }
