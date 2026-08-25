@@ -151,14 +151,23 @@ Verify end to end:
 
 ## 5. Screenshots
 
-Required: **6.7″ / 6.9″ iPhone**, at least 3, up to 10. Apple accepts one
-size and scales down for the rest, so one set is enough.
+The version page asks for the **iPhone 6.5″ Display** slot, and accepts
+1242 × 2688 or 1284 × 2778 (portrait). Up to 10; Apple reuses these for
+the other display sizes, so one set is enough. Only the first 3 appear on
+the install sheet, so put the best ones first.
 
-Capture on a device or simulator of that class with real-looking but
-non-personal content — do not screenshot your own passport. Suggested
-order, matching the description's structure: capture → dates found with
-the ambiguous-date choice visible → reminder confirmation → quiet home
-screen.
+1284 × 2778 is what an **iPhone 14 Plus** or **13 Pro Max** simulator
+produces, which is the easiest way to hit it exactly:
+
+```sh
+open -a Simulator
+# boot an iPhone 14 Plus, run the app, then Cmd-S saves to Desktop
+```
+
+Use real-looking but non-personal content — do not screenshot your own
+passport. Suggested order, matching the description's structure: capture
+→ dates found with the ambiguous-date choice visible → reminder
+confirmation → quiet home screen.
 
 The ambiguous-date screen is the one that actually differentiates the
 app. Lead with it if you only ship three.
