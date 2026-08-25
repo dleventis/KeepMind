@@ -106,12 +106,14 @@ class RevenueCatEntitlementService implements EntitlementService {
       if (current == null) return const [];
 
       return current.availablePackages
-          .map((p) => PurchaseOption(
-                id: p.identifier,
-                title: p.storeProduct.title,
-                priceString: p.storeProduct.priceString,
-                description: p.storeProduct.description,
-              ))
+          .map(
+            (p) => PurchaseOption(
+              id: p.identifier,
+              title: p.storeProduct.title,
+              priceString: p.storeProduct.priceString,
+              description: p.storeProduct.description,
+            ),
+          )
           .toList(growable: false);
     } catch (_) {
       return const [];
@@ -129,7 +131,11 @@ class RevenueCatEntitlementService implements EntitlementService {
       final match = packages.where((p) => p.identifier == option.id);
       if (match.isEmpty) return PurchaseOutcome.failed;
 
-      final result = await Purchases.purchasePackage(match.first);
+      // `purchasePackage` is deprecated in favour of the unified
+      // `purchase(PurchaseParams)` entry point.
+      final result = await Purchases.purchase(
+        PurchaseParams(package: match.first),
+      );
       _emit(_fromCustomerInfo(result.customerInfo));
       return PurchaseOutcome.purchased;
     } on PlatformException catch (e) {

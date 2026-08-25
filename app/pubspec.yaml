@@ -4,7 +4,11 @@ publish_to: "none"
 version: 0.1.0+1
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
+  # flutter_local_notifications 22.x requires Flutter 3.38.1+; riverpod
+  # 3.4.2 requires Dart ^3.12.0. A lower bound below either lets
+  # `flutter pub get` resolve on an SDK where the code will not compile.
+  sdk: ^3.12.0
+  flutter: ">=3.38.1"
 
 dependencies:
   flutter:
@@ -29,9 +33,14 @@ dependencies:
   # On-device OCR (Phase D)
   google_mlkit_text_recognition: ^0.16.0
 
-  # Deterministic local reminders (Phase G)
+  # Deterministic local reminders (Phase G). flutter_timezone is required
+  # because package:timezone deliberately does not detect the device's own
+  # zone ("highly platform dependent and is not a goal of this package").
+  # Without it tz.local falls back to UTC and every reminder fires at the
+  # wrong civil hour.
   flutter_local_notifications: ^22.3.0
   timezone: ^0.11.0
+  flutter_timezone: ^5.1.0
 
   # Capture (Phase C). image_picker only — the `camera` package is
   # deliberately NOT used: image_picker hands off to the OS camera UI,
@@ -57,27 +66,17 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-# Encrypted SQLite (SQLite3MultipleCiphers instead of the deprecated
-# sqlcipher_flutter_libs — see docs/DECISIONS.md, ADR-0002). This uses
-# Dart's native-assets build hooks, which is a newer, still-evolving pub
-# tooling feature — verify the exact current syntax against
-# https://drift.simonbinder.eu/platforms/encryption/ locally before Phase B,
-# since it could not be confirmed by running `flutter pub get` in this
-# sandbox (no pub.dev access here — see README.md).
-# hooks:
-#   user_defines:
-#     sqlite3:
-#       source: sqlite3mc
-
-# NOTE: version constraints here were checked against individual pub.dev
-# package pages, but this sandbox has never run an actual `flutter pub
-# get` resolution against the real pub.dev index (no network access to it
-# from here — see README.md). The first real `flutter pub get` on your
-# machine caught one real mismatch already: `timezone: ^0.10.0` was too
-# tight for `flutter_local_notifications: ^22.3.0`'s own `timezone:
-# ^0.11.0` requirement, fixed above. Treat this file as "best effort, not
-# resolver-verified" — further constraint mismatches may still surface the
-# first time you run `flutter pub get`; paste the error back and I'll fix
-# the specific constraint. Once it resolves cleanly, commit the resulting
-# pubspec.lock (pubspec.lock is intentionally NOT committed from this
-# skeleton — see .gitignore — since it was never actually resolved).
+# Encrypted SQLite: bundles SQLite3MultipleCiphers instead of plain
+# SQLite, which is what makes `PRAGMA key` in app_database.dart actually
+# encrypt anything. Without this block the app still runs, but silently
+# writes an UNENCRYPTED database (plain SQLite ignores PRAGMA key) and
+# then trips the `_debugHasCipher` assert on first open. Verified against
+# https://drift.simonbinder.eu/platforms/encryption/ — see ADR-0002.
+#
+# This block has now been lost twice to a stale working copy. If it is
+# ever missing, the database is not encrypted — treat that as a release
+# blocker, not a nit.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

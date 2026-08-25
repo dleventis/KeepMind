@@ -5,7 +5,15 @@ linter:
     prefer_single_quotes: true
     always_declare_return_types: true
     avoid_print: true
-    require_trailing_commas: true
+
+    # `require_trailing_commas` is deliberately NOT enabled. Its own docs
+    # say it "assumes that code has been formatted with dart format", but
+    # the tall-style formatter introduced in Dart 3.7 decides line breaks
+    # itself and no longer needs a trailing comma to trigger them — so the
+    # rule and the formatter disagree, and the rule flagged 16 sites that
+    # `dart format` is perfectly happy with. It is a pure style rule with
+    # no correctness value, so the formatter wins. Run `dart format .`
+    # and let it own comma placement.
 
 analyzer:
   exclude:
