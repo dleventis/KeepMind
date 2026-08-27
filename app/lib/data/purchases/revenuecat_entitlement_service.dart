@@ -107,9 +107,7 @@ class RevenueCatEntitlementService implements EntitlementService {
       final current = offerings.current;
       if (current == null) return const [];
 
-      return current.availablePackages
-          .map(_toOption)
-          .toList(growable: false);
+      return current.availablePackages.map(_toOption).toList(growable: false);
     } catch (_) {
       return const [];
     }

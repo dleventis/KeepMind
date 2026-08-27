@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:keepmind/data/repositories/memory_repository_impl.dart';
-import 'package:keepmind/domain/entitlements/entitlement_service.dart';
 import 'package:keepmind/presentation/paywall/paywall_screen.dart';
 import 'package:keepmind/presentation/providers/app_providers.dart';
 

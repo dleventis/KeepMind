@@ -137,9 +137,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     // link. Try, and report honestly if it fails.
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't open $url")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Couldn't open $url")));
     }
   }
 }

@@ -235,7 +235,6 @@ class _Benefit extends StatelessWidget {
   }
 }
 
-
 /// One purchasable plan.
 ///
 /// Shows the period, the recurring price, any introductory offer, and —

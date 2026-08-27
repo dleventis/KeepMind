@@ -5,8 +5,7 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'Mindkeep';
-  static const String tagline =
-      'Capture it now. Remember it when it matters.';
+  static const String tagline = 'Capture it now. Remember it when it matters.';
   static const String emptyHomeMessage =
       'Nothing you need to remember right now.';
   static const String captureButtonLabel = '+ Remember something';

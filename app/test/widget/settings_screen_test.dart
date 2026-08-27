@@ -17,16 +17,18 @@ Widget _appUnder({FakeEntitlementService? entitlements}) {
     overrides: [
       memoryRepositoryProvider.overrideWithValue(InMemoryMemoryRepository()),
       ocrServiceProvider.overrideWithValue(FakeOcrService()),
-      entitlementServiceProvider
-          .overrideWithValue(entitlements ?? FakeEntitlementService()),
+      entitlementServiceProvider.overrideWithValue(
+        entitlements ?? FakeEntitlementService(),
+      ),
     ],
     child: const MaterialApp(home: SettingsScreen()),
   );
 }
 
 void main() {
-  testWidgets('offers Restore Purchases without requiring a purchase first',
-      (tester) async {
+  testWidgets('offers Restore Purchases without requiring a purchase first', (
+    tester,
+  ) async {
     await tester.pumpWidget(_appUnder());
     await tester.pumpAndSettle();
 
@@ -42,8 +44,9 @@ void main() {
     expect(find.text('Terms of use'), findsOneWidget);
   });
 
-  testWidgets('shows the free plan with usage, and an upgrade route',
-      (tester) async {
+  testWidgets('shows the free plan with usage, and an upgrade route', (
+    tester,
+  ) async {
     await tester.pumpWidget(_appUnder());
     await tester.pumpAndSettle();
 
