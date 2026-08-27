@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../domain/entitlements/entitlement_service.dart';
 import '../../domain/entitlements/entitlements.dart';
 import '../providers/app_providers.dart';
@@ -129,12 +131,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 ..._options.map(
                   (option) => Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: FilledButton(
+                    child: _PlanButton(
+                      option: option,
                       onPressed: _busy ? null : () => _purchase(option),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Text('${option.title} — ${option.priceString}'),
-                      ),
                     ),
                   ),
                 ),
@@ -145,6 +144,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 // is the kind of copy this app will not ship.
                 child: const Text('Not now'),
               ),
+              if (_options.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                _SubscriptionTerms(
+                  hasFreeTrial: _options.any(
+                    (o) => o.introOffer?.isFree ?? false,
+                  ),
+                  onOpen: _open,
+                ),
+              ],
             ],
           ),
         ),
@@ -170,6 +178,21 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             content: Text("That didn't go through. You have not been charged."),
           ),
         );
+    }
+  }
+
+  Future<void> _open(String url) async {
+    // Same reasoning as Settings: no canLaunchUrl() pre-check, because it
+    // can return false where launchUrl would have worked, and a dead
+    // terms link on a paywall is a rejection.
+    final ok = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Couldn't open $url")));
     }
   }
 
@@ -208,6 +231,125 @@ class _Benefit extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+/// One purchasable plan.
+///
+/// Shows the period, the recurring price, any introductory offer, and —
+/// on plans longer than a month — the store's own per-month equivalent,
+/// so comparing them is reading rather than arithmetic. Guideline 3.1.2
+/// requires the length and price of a subscription to be visible before
+/// purchase; a trial that is not stated here would be the app hiding
+/// something the user is about to agree to.
+class _PlanButton extends StatelessWidget {
+  const _PlanButton({required this.option, required this.onPressed});
+
+  final PurchaseOption option;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final intro = option.introOffer;
+    final perMonth = option.pricePerMonthString;
+
+    return FilledButton(
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              option.displayTitle,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              intro == null
+                  ? option.priceLine
+                  : '${intro.summary}, then ${option.priceLine}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (perMonth != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                '$perMonth per month',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.75),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The renewal terms and the two links App Store review expects to find
+/// on a screen that sells a subscription (Guideline 3.1.2). Kept plain
+/// and unstyled — this is information the user is entitled to, not fine
+/// print to be survived.
+class _SubscriptionTerms extends StatelessWidget {
+  const _SubscriptionTerms({required this.hasFreeTrial, required this.onOpen});
+
+  final bool hasFreeTrial;
+  final Future<void> Function(String url) onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Divider(color: theme.colorScheme.outlineVariant),
+        const SizedBox(height: 12),
+        Text(
+          'Payment is charged to your Apple ID when you confirm. A '
+          'subscription renews automatically unless you cancel it at least '
+          '24 hours before the current period ends, and renewal is charged '
+          'within 24 hours of that. You can cancel at any time in your '
+          'Apple ID settings.',
+          style: style,
+        ),
+        if (hasFreeTrial) ...[
+          const SizedBox(height: 8),
+          Text(
+            'A free trial becomes a paid subscription when it ends, unless '
+            'you cancel before then.',
+            style: style,
+          ),
+        ],
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () => onOpen(AppConstants.termsOfUseUrl),
+              child: const Text('Terms of Use'),
+            ),
+            Text('·', style: style),
+            TextButton(
+              onPressed: () => onOpen(AppConstants.privacyPolicyUrl),
+              child: const Text('Privacy Policy'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

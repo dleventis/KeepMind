@@ -13,11 +13,30 @@ class FakeEntitlementService implements EntitlementService {
   Entitlements _current;
   final _controller = StreamController<Entitlements>.broadcast();
 
+  /// Mirrors what App Store Connect actually serves: a monthly plan and
+  /// a yearly one carrying a two-week free trial. Tests that only care
+  /// about entitlement state can ignore this; the paywall tests depend
+  /// on it being shaped like the real thing.
   List<PurchaseOption> options = const [
     PurchaseOption(
       id: 'premium_monthly',
-      title: 'Mindkeep Premium',
-      priceString: '2.99 EUR',
+      title: 'Mindkeep Premium Monthly',
+      priceString: '1.99 EUR',
+      period: BillingPeriod.monthly,
+    ),
+    PurchaseOption(
+      id: 'premium_annual',
+      title: 'Mindkeep Premium Annual',
+      priceString: '14.99 EUR',
+      period: BillingPeriod.annual,
+      pricePerMonthString: '1.25 EUR',
+      introOffer: IntroOffer(
+        priceString: '0.00 EUR',
+        isFree: true,
+        unit: IntroPeriodUnit.week,
+        unitCount: 2,
+        cycles: 1,
+      ),
     ),
   ];
 

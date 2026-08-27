@@ -17,11 +17,9 @@ class AppConstants {
   ///
   /// The policy is served from this repo's own docs/ folder via GitHub
   /// Pages — no domain to buy or renew, and it stays version-controlled
-  /// alongside the behaviour it describes.
-  ///
-  /// TODO(pre-submission): enable GitHub Pages for this repo
-  /// (Settings -> Pages -> Deploy from a branch -> main, /docs) and check
-  /// this URL loads in a browser. A dead link here is a certain rejection.
+  /// alongside the behaviour it describes. Pages is enabled and this URL
+  /// was verified live on 25 August 2026; re-check it before any
+  /// submission, since a dead link here is a certain rejection.
   static const String privacyPolicyUrl =
       'https://dleventis.github.io/KeepMind/privacy.html';
 
