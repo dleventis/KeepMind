@@ -97,6 +97,19 @@ void main() {
     expect(find.text('Terms of Use'), findsNothing);
   });
 
+  testWidgets('does not claim the free tier is full when it is not', (
+    tester,
+  ) async {
+    // The paywall is reachable from Settings at any time. Telling someone
+    // with an empty library that they have "used all 10 free memories"
+    // would be manufactured scarcity, and false.
+    await tester.pumpWidget(_appUnder());
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining("You're using 0 of 10"), findsOneWidget);
+    expect(find.textContaining('used all'), findsNothing);
+  });
+
   testWidgets('dismissing does not guilt the user', (tester) async {
     await tester.pumpWidget(_appUnder());
     await tester.pumpAndSettle();

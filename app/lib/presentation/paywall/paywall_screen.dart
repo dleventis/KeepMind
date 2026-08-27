@@ -66,7 +66,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "You've used all ${FreeTierLimits.maxActiveMemories} free memories",
+                _headline(ref.watch(activeMemoryCountProvider)),
                 style: theme.textTheme.headlineSmall,
               ),
               const SizedBox(height: 12),
@@ -179,6 +179,16 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           ),
         );
     }
+  }
+
+  /// The paywall is reachable from Settings at any time, not only when
+  /// the free tier is full, so it must not claim the user is out of room
+  /// when they are not. Manufactured scarcity is a dark pattern the brief
+  /// rules out (§53), and it would be a plain lie besides.
+  String _headline(int count) {
+    const max = FreeTierLimits.maxActiveMemories;
+    if (count >= max) return "You've used all $max free memories";
+    return "You're using $count of $max free memories";
   }
 
   Future<void> _open(String url) async {
