@@ -80,8 +80,11 @@ Subscription Group.
   - Reference name: `Mindkeep Premium Monthly`
   - Product ID: `com.dleventis.keepmind.premium.monthly`
   - Duration: 1 month
-  - Price: your call — look at what comparable single-purpose utilities
-    charge before picking
+  - Price: €1.99
+- Second subscription in the same group:
+  - Reference name: `Mindkeep Premium Annual`
+  - Product ID: `com.dleventis.keepmind.premium.yearly`
+  - Duration: 1 year, €14.99, with a two-week free introductory offer
 - Required per subscription: a localised **display name** and
   **description**, and a **1024×1024 promotional image** is optional
 - Group-level: a localised group display name (users see this in Manage
@@ -103,14 +106,21 @@ reviewed alongside the first build that references it.
    RevenueCat can validate receipts and read your products. Without this,
    offerings come back empty and the paywall shows nothing.
 3. Products → import / add `com.dleventis.keepmind.premium.monthly`.
-4. Entitlements → create one with identifier exactly **`premium`** →
-   attach the product. The identifier is hard-coded as the default in
-   `app/lib/data/purchases/revenuecat_entitlement_service.dart`; if you
-   name it anything else the app will never see a purchase.
-5. Offerings → create the **default/current** offering → add a package
-   containing the product. `getOfferings().current` is what the app
-   reads; if no offering is marked current, `current()` returns an empty
-   package list and the paywall is empty.
+4. Entitlements → create **one** entitlement with identifier exactly
+   **`premium`** and attach **both** products to it. Both plans unlock the
+   same thing, so this is one entitlement, not two. The identifier is the
+   default in
+   `app/lib/data/purchases/revenuecat_entitlement_service.dart`; name it
+   anything else and the app never sees a purchase — silently, because a
+   missing entitlement is indistinguishable from an unsubscribed user.
+5. Offerings → create the **default/current** offering → add two
+   packages, using the standard **Monthly** and **Annual** package types
+   rather than custom ones. The app derives its on-screen plan labels from
+   package type, so a custom type renders as a generic "Premium".
+   Attach the **App Store** products here, not the Test Store ones that
+   RevenueCat creates automatically — Test Store products will not resolve
+   on a real device. `getOfferings().current` is what the app reads; if no
+   offering is marked current, the paywall shows nothing.
 6. Copy the **public SDK key** for Apple (`appl_...`) from Project
    Settings → API keys.
 
